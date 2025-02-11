@@ -1,17 +1,26 @@
 <script>
   import SearchBar from "../lib/searchBar.svelte";
+	import Logo from "../lib/logo.svelte";
+  import Header from "$lib/header.svelte";
 </script>
 
-<div class="flex justify-between items-center w-full p-4 bg-gray-200">
-  <img src="/logo.png" alt="Logo" class="w-10" />
-  <button class="bg-gray-300 px-4 py-2 rounded">Sign In, Name</button>
-</div>
+<Header/>
 
 <div class="flex flex-col items-center justify-center h-screen text-center">
   <div class="flex items-center text-2xl font-bold text-purple-700">
-    <img src="/logo.png" alt="Eventify Logo" class="w-20" />
+    <Logo/>
     <span>ventify</span>
   </div>
   
   <SearchBar />
+</div>
+
+<div class="mt-10 p-6 bg-gray-100 text-center">
+  <h2 class="text-xl font-semibold text-gray-800">About Us</h2>
+  <p class="mt-2 text-gray-600 max-w-2xl mx-auto">
+    Eventify is your go-to platform for discovering and booking events near you. Our mission is to 
+    make event exploration seamless, providing a user-friendly experience to connect people with 
+    the best happenings around them. Whether you're looking for concerts, meetups, or workshops, 
+    Eventify has got you covered!
+  </p>
 </div>
