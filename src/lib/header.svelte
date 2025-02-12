@@ -2,6 +2,7 @@
     import SearchBar from "$lib/searchBar.svelte";
     import LoginOutButton from "./login-outButton.svelte";
     import Logo from "./logo.svelte";
+    let { text = "Sign In", href = "/login" } = $props();
 </script>
 
 <div
@@ -9,5 +10,5 @@
 >
     <Logo />
     <SearchBar />
-    <LoginOutButton />
+    <LoginOutButton text = {text} href = {href} />
 </div>
