@@ -1,17 +1,16 @@
 <script>
   import SearchBar from "../lib/searchBar.svelte";
-	import Logo from "../lib/logo.svelte";
+	import Logo from "$lib/logo.svelte";
   import Header from "$lib/header.svelte";
 </script>
 
 <Header/>
 
-<div class="flex flex-col items-center justify-center h-screen text-center">
-  <div class="flex items-center text-2xl font-bold text-purple-700">
-    <Logo/>
-    <span>ventify</span>
+<div class="flex flex-col justify-center h-screen text-center items-center p-20">
+  <div class="flex items-center text-6xl font-bold text-purple-700 mb-20 align-middle">
+    <Logo  --icon-border-height = 6 />
+    <span class="ml-18">ventify</span>
   </div>
-  
   <SearchBar />
 </div>
 

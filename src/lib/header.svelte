@@ -6,7 +6,7 @@
 </script>
 
 <div
-    class="container mx-auto p-3 bg-slate-50 shadow-md max-w-full  join flex flex-row gap-2"
+    class="container mx-auto p-3 bg-slate-50 shadow-md max-w-full  join flex flex-row gap-2 items-center"
 >
     <Logo />
     <SearchBar />

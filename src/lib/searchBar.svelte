@@ -15,15 +15,15 @@
 </script>
 
 <form
-  class="relative block w-full mx-auto"
+  class="relative block w-full mx-auto content-center"
   method="GET"
   action="/search?q={data}"
 >
   <input
     bind:value={data}
     type="text"
-    class="w-full bg-white placeholder:font-italitc border border-slate-400 rounded-2xl focus:outline-none"
-    placeholder="Search&hellip;"
+    class="w-full bg-white placeholder:font-italitc border border-slate-400 rounded-2xl focus:outline-none h-10 placeholder:align-middle placeholder:-translate-y-0.5"
+    placeholder="  Search&hellip;"
     name="q"
     oninput={search}
     required

@@ -1,7 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte";
   
-    /** @type {import('./$types').Actions} */
     export let form;
   
     const dispatch = createEventDispatcher();
