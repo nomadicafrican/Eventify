@@ -21,6 +21,7 @@
       }
     }
   </script>
+
   <div class="flex min-h-screen items-center justify-center bg-gray-100">
     <form on:submit|preventDefault={submit} class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
       <h1 class="text-2xl font-semibold text-center text-purple-700">Sign in</h1>
