@@ -1,4 +1,4 @@
-import { SQL, sql } from "bun";
+import { sql } from "bun";
 
 // const db = new SQL("postgres://postgres:postgres@localhost:5436/eventify");
 
@@ -15,8 +15,11 @@ const connect = async () => {
 await sql`
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL,
+    email_verified BOOLEAN NOT NULL,
+    registered_2fa BOOLEAN NOT NULL
   )`;
 
 await sql`

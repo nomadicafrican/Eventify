@@ -1,22 +1,24 @@
+import { sql } from "bun";
 import { encodeBase32LowerCaseNoPadding } from "@oslojs/encoding";
 import { getRandomValues } from "node:crypto";
 import { RequestEvent } from "@svelte/kit";
 
 /**
- * @typedef SessionValidationResult
- * @param {Promise<{ session: Session; user: User }> | Promise<{ sesion: null; user: null }>}
+ * @typedef {Promise<{ session: Session; user: User }>} ValidSessionResult
+ * @typedef {Promise<{ session: null; user: null }>} InvalidSessionResult
+ * @typedef {ValidSessionResult | InvalidSessionResult} SessionValidationResult
  *
  * @typedef Session
- * @param {string} id
- * @param {number} userId
- * @param {Date} expiresAt
+ * @property {string} id
+ * @property {number} userId
+ * @property {Date} expiresAt
  *
  * @typedef User
- * @param {number} id
+ * @property {number} id
  */
 
 /** @access private **/
-const hasher = new Bun.CryptoHasher("sha-256")
+const hasher = new Bun.CryptoHasher("sha256")
 
 /**
  * @returns {string}

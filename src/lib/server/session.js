@@ -1,22 +1,24 @@
 import { encodeBase32LowerCaseNoPadding } from "@oslojs/encoding";
 import { getRandomValues } from "node:crypto";
-import { RequestEvent } from "@svelte/kit";
+import { sql } from "bun";
 
 /**
- * @typedef SessionValidationResult
- * @param {Promise<{ session: Session; user: User }> | Promise<{ sesion: null; user: null }>}
+ * @typedef {import('@sveltejs/kit').RequestEvent} RequestEvent
+ * @typedef {Promise<{ session: Session; user: User }>} ValidSessionResult
+ * @typedef {Promise<{ session: null; user: null }>} InvalidSessionResult
+ * @typedef { ValidSessionResult | InvalidSessionResult } SessionValidationResult
  *
- * @typedef Session
- * @param {string} id
- * @param {number} userId
- * @param {Date} expiresAt
+ * @typedef {Object} Session
+ * @property {string} id
+ * @property {number} userId
+ * @property {Date} expiresAt
  *
- * @typedef User
- * @param {number} id
+ * @typedef {Object} User
+ * @property {number} id
  */
 
 /** @access private **/
-const hasher = new Bun.CryptoHasher("sha-256")
+const hasher = new Bun.CryptoHasher("sha256");
 
 /**
  * @returns {string}
@@ -44,19 +46,14 @@ export async function createSession(token, userId) {
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
   };
 
-  await sql`
-    INSERT INTO ${user_session} (id, user_id, expires_at) VALUES (?, ?, ?),
-    ${session.id},
-    ${session.userId},
-    ${session.expiresAt}
-  `;
+  await sql`INSERT INTO user_session (id, user_id, expires_at) VALUES (${session.id}, ${session.userId}, ${session.expiresAt})`;
   return session;
 }
 
 
 /**
  * @param {string} token
- * @return {SessionValidationResult}
+ * @return {Promise<SessionValidationResult>}
  */
 export async function validateSessionToken(token) {
   hasher.update(new TextEncoder().encode(token))
@@ -71,7 +68,6 @@ export async function validateSessionToken(token) {
     INNER JOIN user ON app_user.id = user_session.user_id
     WHERE id = ${sessionId}
   `;
-  row = row[0];
   if (row === null) {
     return { session: null, user: null };
   }
@@ -79,7 +75,7 @@ export async function validateSessionToken(token) {
   /** @type(Session) **/
   const session = {
     id: row.id,
-    userid: row.user_id,
+    userId: row.user_id,
     expiresAt: row.expires_at
   };
   /** @type(User) **/

@@ -3,7 +3,15 @@ import { sql } from "bun";
 import { hashPassword } from "./password";
 // import { generateRandomRecoveryCode } from "./utils";
 
+
 /**
+ * @typedef {Object} User
+ * @property {number} id
+ * @property {string} username
+ * @property {string} email
+ * @property {boolean} emailVerified
+ * @property {boolean} registered2FA
+ *
  * @param {string} username
  * @return {boolean}
  */
@@ -21,7 +29,7 @@ export async function createUser(email, username, password) {
   const passwordHash = await hashPassword(password);
   const recoveryCode = generateRandomRecoveryCode();
   const encryptedRecoveryCode = encryptString(recoveryCode);
-  const row = sql`
+  const row = await sql`
     INSERT INTO user (email, username, password_hash)
     VALUES (${email}, ${username}, ${passwordHash})
     RETURNING user.id
@@ -32,7 +40,7 @@ export async function createUser(email, username, password) {
 
   /** @type {User} */
   const user = {
-    id: row.number(0),
+    id: row[0].id,
     username,
     email,
     emailVerified: false,
@@ -79,68 +87,78 @@ export async function getUserPasswordHash(userId) {
   if (row === null) {
     throw new Error("Invalid user ID");
   }
-  return row[0].password_hash;
+  return row.password_hash;
 }
 
 /**
  * @param {number} userId
- * @return {string}
+ * @return {Promise<string>}
  */
-export function getUserRecoverCode(userId) {
+export async function getUserRecoverCode(userId) {
   const row = await sql`SELECT password_hash FROM user WHERE id = ${userId}`
   if (row === null) {
     throw new Error("Invalid user ID");
   }
-  return decryptToString(row.bytes(0));
+  return decryptToString(row[0].password_hash);
 }
 
-export function getUserTOTPKey(userId: number): Uint8Array | null {
-  const row = db.queryOne("SELECT totp_key FROM user WHERE id = ?", [userId]);
+/**
+ * @param {number} userId
+ * @return {Promise<Uint8Array | null>}
+ */
+export async function getUserTOTPKey(userId) {
+  const row = await sql`SELECT totp_key FROM user WHERE id = ${userId}`
   if (row === null) {
     throw new Error("Invalid user ID");
   }
-  const encrypted = row.bytesNullable(0);
+  const encrypted = row[0].totp_key;
   if (encrypted === null) {
     return null;
   }
   return decrypt(encrypted);
 }
 
-export function updateUserTOTPKey(userId: number, key: Uint8Array): void {
+
+/**
+ * @param {number} userId
+ * @param {Uint8Array} key
+ * @return {Promise<void>}
+ */
+export async function updateUserTOTPKey(userId, key) {
   const encrypted = encrypt(key);
-  db.execute("UPDATE user SET totp_key = ? WHERE id = ?", [encrypted, userId]);
+  await sql`UPDATE user SET totp_key = ${encrypted} WHERE id = ${userId}`
 }
 
-export function resetUserRecoveryCode(userId: number): string {
+
+/**
+ * @param {number} userId
+ * @return {Promise<string>}
+ */
+export async function resetUserRecoveryCode(userId) {
   const recoveryCode = generateRandomRecoveryCode();
   const encrypted = encryptString(recoveryCode);
-  db.execute("UPDATE user SET recovery_code = ? WHERE id = ?", [encrypted, userId]);
+  await sql`UPDATE user SET recovery_code = ${encrypted} WHERE id = ${userId}`;
   return recoveryCode;
 }
 
-export function getUserFromEmail(email: string): User | null {
-  const row = db.queryOne(
-    "SELECT id, email, username, email_verified, IIF(totp_key IS NOT NULL, 1, 0) FROM user WHERE email = ?",
-    [email]
-  );
+
+/**
+ * @param {string} email
+ * @return {Promise<User | null>}
+ */
+export async function getUserFromEmail(email) {
+  const row = await sql`SELECT id, email, username, email_verified, IIF(totp_key IS NOT NULL, 1, 0) FROM user WHERE email = ${email}`;
   if (row === null) {
     return null;
   }
-  const user: User = {
-    id: row.number(0),
-    email: row.string(1),
-    username: row.string(2),
-    emailVerified: Boolean(row.number(3)),
-    registered2FA: Boolean(row.number(4))
+  /** @type {User} */
+  const user = {
+    id: row[0].id,
+    email: row[0].email,
+    username: row[0].username,
+    emailVerified: Boolean(row[0].email_verified),
+    registered2FA: Boolean(row[0].registered2FA)
   };
   return user;
-}
-
-export interface User {
-  id: number;
-  email: string;
-  username: string;
-  emailVerified: boolean;
-  registered2FA: boolean;
 }
 
