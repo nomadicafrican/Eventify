@@ -43,6 +43,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@sveltejs/adapter-static": "^3.0.8"
+		"@sveltejs/adapter-static": "^3.0.8",
+		"bund": "^0.0.5",
+		"pg": "^8.13.3"
 	}
 }
