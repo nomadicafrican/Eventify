@@ -2,6 +2,7 @@ import { createSession, generateSessionToken, setSessionTokenCookie } from "$lib
 import { redirect, fail } from "@sveltejs/kit";
 import { createUser } from "$lib/server/user";
 import type { User } from "$lib/server/user";
+import { verifyPasswordStrength } from "$lib/server/password";
 
 type Actions = import('./$types').Actions;
 
@@ -24,9 +25,15 @@ export const actions = {
     }
 
     console.log("Havent crashed yet 2")
-    if (password !== passwordConfirmation && password.length > 0) {
+    if (password !== passwordConfirmation) {
       return fail(400, {
         message: "Passwords do not match",
+      })
+    }
+
+    if (!await verifyPasswordStrength(password)) {
+      return fail(400, {
+        message: "Password is too weak",
       })
     }
 
