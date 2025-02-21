@@ -3,8 +3,10 @@ import { getRandomValues } from "node:crypto";
 import { sql } from "bun";
 
 /**
+ * @typedef {import('$lib/server/user').User} User
+ *
  * @typedef {import('@sveltejs/kit').RequestEvent} RequestEvent
- * @typedef {Promise<{ session: Session; user: User }>} ValidSessionResult
+ * @typedef {Promise<{ session: Session; user: Object}>} ValidSessionResult
  * @typedef {Promise<{ session: null; user: null }>} InvalidSessionResult
  * @typedef { ValidSessionResult | InvalidSessionResult } SessionValidationResult
  *
@@ -13,8 +15,6 @@ import { sql } from "bun";
  * @property {number} userId
  * @property {Date} expiresAt
  *
- * @typedef {Object} User
- * @property {number} id
  */
 
 /** @access private **/
@@ -42,14 +42,15 @@ export async function createSession(token, userId) {
   /** @type {Session} **/
   const session = {
     id: sessionId,
-    userId,
+    userId: userId,
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
   };
 
-  await sql`INSERT INTO user_session (id, user_id, expires_at) VALUES (${session.id}, ${session.userId}, ${session.expiresAt})`;
+  await sql`
+    INSERT INTO UserSession (id, user_id, expires_at) VALUES (${session.id}, ${session.userId}, ${session.expiresAt})
+  `;
   return session;
 }
-
 
 /**
  * @param {string} token
@@ -58,30 +59,30 @@ export async function createSession(token, userId) {
 export async function validateSessionToken(token) {
   hasher.update(new TextEncoder().encode(token))
   const sessionId = hasher.digest("hex");
-  const row = await sql`
+  const userSession = await sql`
     SELECT
       user_session.id,
       user_session.user_id,
       user_session.expires_at,
-      app_user.id
+      user.id
     FROM user_session
     INNER JOIN user ON app_user.id = user_session.user_id
     WHERE id = ${sessionId}
   `;
-  if (row === null) {
+  if (userSession === null) {
     return { session: null, user: null };
   }
 
   /** @type(Session) **/
   const session = {
-    id: row.id,
-    userId: row.user_id,
-    expiresAt: row.expires_at
+    id: userSession.id,
+    userId: userSession.user_id,
+    expiresAt: userSession.expires_at
   };
-  /** @type(User) **/
-  const user = {
-    id: row.id
-  };
+
+  const user = ({
+    id: Number(session.id),
+  });
 
   if (Date.now() >= session.expiresAt.getTime()) {
     await sql`DELETE FROM user_session WHERE id = ${session.id}`;

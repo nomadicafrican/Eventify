@@ -2,7 +2,7 @@ services:
   eventify:
     build:
       context: .
-      dockerfile: ./docker/dev.Dockerfile
+      dockerfile: ./docker/dev-bun.Dockerfile
     volumes:
       - .:/app/eventify
       - /app/eventify/node_modules
@@ -23,15 +23,19 @@ services:
 
   postgres:
     image: postgres:15
+    build:
+      context: .
+      dockerfile: ./docker/dev-postgres.Dockerfile
     restart: always
     ports:
-      - 5436:5432
+      - 5432:5432
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./dataset:/docker-entrypoint-initdb.d
     healthcheck:
       test:
         ["CMD", "pg_isready", "-U", "postgres", "-d", "eventify"]

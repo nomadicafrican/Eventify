@@ -11,7 +11,9 @@ import { hashPassword } from "./password";
  * @property {string} email
  * @property {boolean} emailVerified
  * @property {boolean} registered2FA
- *
+ */
+
+/**
  * @param {string} username
  * @return {boolean}
  */
@@ -27,8 +29,6 @@ export function verifyUsernameInput(username) {
  */
 export async function createUser(email, username, password) {
   const passwordHash = await hashPassword(password);
-  const recoveryCode = generateRandomRecoveryCode();
-  const encryptedRecoveryCode = encryptString(recoveryCode);
   const row = await sql`
     INSERT INTO user (email, username, password_hash)
     VALUES (${email}, ${username}, ${passwordHash})
@@ -89,58 +89,6 @@ export async function getUserPasswordHash(userId) {
   }
   return row.password_hash;
 }
-
-/**
- * @param {number} userId
- * @return {Promise<string>}
- */
-export async function getUserRecoverCode(userId) {
-  const row = await sql`SELECT password_hash FROM user WHERE id = ${userId}`
-  if (row === null) {
-    throw new Error("Invalid user ID");
-  }
-  return decryptToString(row[0].password_hash);
-}
-
-/**
- * @param {number} userId
- * @return {Promise<Uint8Array | null>}
- */
-export async function getUserTOTPKey(userId) {
-  const row = await sql`SELECT totp_key FROM user WHERE id = ${userId}`
-  if (row === null) {
-    throw new Error("Invalid user ID");
-  }
-  const encrypted = row[0].totp_key;
-  if (encrypted === null) {
-    return null;
-  }
-  return decrypt(encrypted);
-}
-
-
-/**
- * @param {number} userId
- * @param {Uint8Array} key
- * @return {Promise<void>}
- */
-export async function updateUserTOTPKey(userId, key) {
-  const encrypted = encrypt(key);
-  await sql`UPDATE user SET totp_key = ${encrypted} WHERE id = ${userId}`
-}
-
-
-/**
- * @param {number} userId
- * @return {Promise<string>}
- */
-export async function resetUserRecoveryCode(userId) {
-  const recoveryCode = generateRandomRecoveryCode();
-  const encrypted = encryptString(recoveryCode);
-  await sql`UPDATE user SET recovery_code = ${encrypted} WHERE id = ${userId}`;
-  return recoveryCode;
-}
-
 
 /**
  * @param {string} email

@@ -41,4 +41,3 @@ export async function verifyPasswordStrength(password) {
   }
   return true;
 }
-
