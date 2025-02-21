@@ -3,10 +3,11 @@ import { getRandomValues } from "node:crypto";
 import { sql } from "bun";
 
 /**
- * @typedef {import('$lib/server/user').User} User
+ * @typedef {Object} User
+ * @property {number} id
  *
  * @typedef {import('@sveltejs/kit').RequestEvent} RequestEvent
- * @typedef {Promise<{ session: Session; user: Object}>} ValidSessionResult
+ * @typedef {Promise<{ session: Session; user: User}>} ValidSessionResult
  * @typedef {Promise<{ session: null; user: null }>} InvalidSessionResult
  * @typedef { ValidSessionResult | InvalidSessionResult } SessionValidationResult
  *
@@ -65,20 +66,20 @@ export async function validateSessionToken(token) {
       user_session.id,
       user_session.user_id,
       user_session.expires_at,
-      user.id
+      app_user.id
     FROM user_session
-    INNER JOIN user ON app_user.id = user_session.user_id
-    WHERE id = ${sessionId}
+    INNER JOIN app_user ON app_user.id = user_session.user_id
+    WHERE user_session.id = ${sessionId}
   `;
-  if (userSession === null) {
+  if (userSession.length === 0) {
     return { session: null, user: null };
   }
 
   /** @type(Session) **/
   const session = {
-    id: userSession.id,
-    userId: userSession.user_id,
-    expiresAt: userSession.expires_at
+    id: userSession[0].id,
+    userId: userSession[0].user_id,
+    expiresAt: userSession[0].expires_at
   };
 
   const user = ({
@@ -107,7 +108,9 @@ export async function validateSessionToken(token) {
  * @return {Promise<void>}
  */
 export async function invalidateSession(sessionId) {
-  await sql`DELETE FROM user_session WHERE id = ${sessionId}`;
+  hasher.update(new TextEncoder().encode(sessionId));
+  const sessionIdHashed = hasher.digest("hex");
+  await sql`DELETE FROM user_session WHERE id = ${sessionIdHashed}`
 }
 
 

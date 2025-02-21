@@ -30,23 +30,28 @@ export function verifyUsernameInput(username) {
 export async function createUser(email, username, password) {
   const passwordHash = await hashPassword(password);
   const row = await sql`
-    INSERT INTO app_user (email, username, password_hash)
-    VALUES (${email}, ${username}, ${passwordHash})
-    RETURNING user.id
+    INSERT INTO app_user (email, username, password_hash, email_verified, registered_2fa)
+    VALUES (${email}, ${username}, ${passwordHash}, true, true)
+    RETURNING app_user.id
   `;
   if (row === null) {
     throw new Error("Unexpected error");
   }
 
-  /** @type {User} */
-  const user = {
-    id: row[0].id,
-    username,
-    email,
-    emailVerified: false,
-    registered2FA: false
-  };
-  return user;
+  try {
+    /** @type {User} */
+    const user = {
+      id: row[0].id,
+      username,
+      email,
+      emailVerified: false,
+      registered2FA: false
+    };
+    return user;
+  }
+  catch (e) {
+    throw new Error("Unexpected error");
+  }
 }
 
 /**
@@ -99,14 +104,46 @@ export async function getUserFromEmail(email) {
   if (row === null) {
     return null;
   }
-  /** @type {User} */
-  const user = {
-    id: row[0].id,
-    email: row[0].email,
-    username: row[0].username,
-    emailVerified: Boolean(row[0].email_verified),
-    registered2FA: Boolean(row[0].registered2FA)
-  };
-  return user;
+
+  try {
+    /** @type {User} */
+    const user = {
+      id: row[0].id,
+      email: row[0].email,
+      username: row[0].username,
+      emailVerified: Boolean(row[0].email_verified),
+      registered2FA: Boolean(row[0].registered2FA)
+    };
+    return user;
+  }
+  catch (e) {
+    throw new Error("Unexpected error");
+  }
+}
+
+/**
+ * @param {Number} id
+ * @return {Promise<User | null>}
+ */
+export async function getUserFromId(id) {
+  const row = await sql`SELECT id, email, username, email_verified FROM app_user WHERE id = ${id}`;
+  if (row === null) {
+    return null;
+  }
+
+  try {
+    /** @type {User} */
+    const user = {
+      id: row[0].id,
+      email: row[0].email,
+      username: row[0].username,
+      emailVerified: Boolean(row[0].email_verified),
+      registered2FA: Boolean(row[0].registered2FA)
+    };
+    return user;
+  }
+  catch (e) {
+    throw new Error("Unexpected error");
+  }
 }
 

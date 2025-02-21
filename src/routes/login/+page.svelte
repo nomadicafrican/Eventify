@@ -1,83 +1,53 @@
 <script lang="ts">
-  import Logo from "$lib/logo.svelte";
-  let username = "";
-  let password = "";
+	import { enhance } from '$app/forms';
+	import type { ActionData } from './$types';
 
-  async function submit() {
-    // Replace this with your actual login logic
-    console.log("Logging in:", username, password);
-  }
+	export let form: ActionData;
 </script>
 
-<!-- Navigation/Header (Consistent with Homepage) -->
-<header class="bg-white shadow">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center py-6">
-      <div class="flex items-center">
-        <!-- Bigger Logo with proper spacing -->
-        <a href="/" class="mr-10">
-          <Logo class="w-40 h-40" />
-        </a>
-        <nav class="hidden md:flex space-x-10">
-          <a href="/" class="text-base font-medium text-gray-700 hover:text-gray-900">Home</a>
-          <a href="/events" class="text-base font-medium text-gray-700 hover:text-gray-900">Events</a>
-          <a href="/about" class="text-base font-medium text-gray-700 hover:text-gray-900">About</a>
-          <a href="/contact" class="text-base font-medium text-gray-700 hover:text-gray-900">Contact</a>
-        </nav>
-      </div>
-      <div class="hidden md:flex items-center space-x-4">
-        <a href="/login" class="text-base font-medium text-gray-700 hover:text-gray-900">Sign In</a>
-        <a
-          href="/register"
-          class="whitespace-nowrap inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-        >
-          Register
-        </a>
-      </div>
-    </div>
-  </div>
-</header>
-
 <!-- Login Form Section -->
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500 px-4">
-  <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
-    <h1 class="text-3xl font-bold text-center text-gray-800">Sign In</h1>
-    <p class="text-center text-gray-500">Access your Eventify account</p>
-    <form on:submit|preventDefault={submit} class="space-y-4">
-      <div>
-        <label class="block text-gray-700 mb-1" for="username">Username</label>
-        <input
-          id="username"
-          type="text"
-          bind:value={username}
-          placeholder="Enter your username"
-          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          required
-        />
-      </div>
-      <div>
-        <label class="block text-gray-700 mb-1" for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          bind:value={password}
-          placeholder="Enter your password"
-          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          required
-        />
-      </div>
-      <button
-        type="submit"
-        class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
-      >
-        Sign In
-      </button>
-    </form>
-    <div class="text-center">
-      <p class="text-gray-500">
-        Don't have an account?
-        <a href="/register" class="text-indigo-600 hover:underline">Register</a>
-      </p>
-    </div>
-  </div>
+<div
+	class="flex min-h-screen items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500 px-4"
+>
+	<div class="w-full max-w-md space-y-6 rounded-xl bg-white p-8 shadow-lg">
+		<h1 class="text-center text-3xl font-bold text-gray-800">Sign In</h1>
+		<p class="text-center text-gray-500">Access your Eventify account</p>
+		<form method="post" use:enhance class="space-y-4">
+			<div>
+				<label class="mb-1 block text-gray-700" for="form-login.email">Username</label>
+				<input
+					id="form-login.email"
+					type="text"
+					value={form?.email ?? ''}
+					name="email"
+					placeholder="Enter your username"
+					class="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+					required
+				/>
+			</div>
+			<div>
+				<label class="mb-1 block text-gray-700" for="form-login.password">Password</label>
+				<input
+					id="form-login.password"
+					type="password"
+					name="password"
+					placeholder="Enter your password"
+					class="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+					required
+				/>
+			</div>
+			<button
+				class="w-full rounded-lg bg-indigo-600 py-3 font-semibold text-white transition-colors hover:bg-indigo-700"
+			>
+				Sign In
+			</button>
+			<p>{form?.message ?? ''}</p>
+		</form>
+		<div class="text-center">
+			<p class="text-gray-500">
+				Don't have an account?
+				<a href="/register" class="text-indigo-600 hover:underline">Register</a>
+			</p>
+		</div>
+	</div>
 </div>
