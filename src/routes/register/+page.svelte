@@ -1,20 +1,23 @@
 <script lang="ts">
   import Logo from "$lib/logo.svelte";
-  let username = "";
+  let email = "";
   let password = "";
+  let passwordConfirm = "";
 
-  async function submit() {
-    // Replace this with your actual login logic
-    console.log("Logging in:", username, password);
-  }
+  const emailVerificationRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+
+  $: isValid = emailVerificationRegex.test(email) && password.length > 0 && password === passwordConfirm;
+
+  const register = () => {
+    console.log("Registering:", email, password, passwordConfirm);
+  };
 </script>
 
-<!-- Navigation/Header (Consistent with Homepage) -->
+<!-- Navigation/Header (Same as other pages) -->
 <header class="bg-white shadow">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center py-6">
       <div class="flex items-center">
-        <!-- Bigger Logo with proper spacing -->
         <a href="/" class="mr-10">
           <Logo class="w-40 h-40" />
         </a>
@@ -38,19 +41,19 @@
   </div>
 </header>
 
-<!-- Login Form Section -->
+<!-- Registration Form Section -->
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500 px-4">
   <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
-    <h1 class="text-3xl font-bold text-center text-gray-800">Sign In</h1>
-    <p class="text-center text-gray-500">Access your Eventify account</p>
-    <form on:submit|preventDefault={submit} class="space-y-4">
+    <h1 class="text-3xl font-bold text-center text-gray-800">Register</h1>
+    <p class="text-center text-gray-500">Create your new account on Eventify</p>
+    <form on:submit|preventDefault={register} class="space-y-4">
       <div>
-        <label class="block text-gray-700 mb-1" for="username">Username</label>
+        <label class="block text-gray-700 mb-1" for="email">Email</label>
         <input
-          id="username"
-          type="text"
-          bind:value={username}
-          placeholder="Enter your username"
+          id="email"
+          type="email"
+          bind:value={email}
+          placeholder="Enter your email"
           class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           required
         />
@@ -66,17 +69,29 @@
           required
         />
       </div>
+      <div>
+        <label class="block text-gray-700 mb-1" for="passwordConfirm">Confirm Password</label>
+        <input
+          id="passwordConfirm"
+          type="password"
+          bind:value={passwordConfirm}
+          placeholder="Confirm your password"
+          class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          required
+        />
+      </div>
       <button
         type="submit"
-        class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+        class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+        disabled={!isValid}
       >
-        Sign In
+        Register
       </button>
     </form>
     <div class="text-center">
       <p class="text-gray-500">
-        Don't have an account?
-        <a href="/register" class="text-indigo-600 hover:underline">Register</a>
+        Already have an account?
+        <a href="/login" class="text-indigo-600 hover:underline">Sign In</a>
       </p>
     </div>
   </div>
