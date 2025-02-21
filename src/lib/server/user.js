@@ -30,7 +30,7 @@ export function verifyUsernameInput(username) {
 export async function createUser(email, username, password) {
   const passwordHash = await hashPassword(password);
   const row = await sql`
-    INSERT INTO user (email, username, password_hash)
+    INSERT INTO app_user (email, username, password_hash)
     VALUES (${email}, ${username}, ${passwordHash})
     RETURNING user.id
   `;
@@ -56,7 +56,7 @@ export async function createUser(email, username, password) {
  */
 export async function updateUserPassword(userId, password) {
   const passwordHash = await hashPassword(password);
-  await sql`UPDATE user SET password_hash = ${passwordHash} WHERE id = ${userId}`;
+  await sql`UPDATE app_user SET password_hash = ${passwordHash} WHERE id = ${userId}`;
 }
 
 /**
@@ -65,7 +65,7 @@ export async function updateUserPassword(userId, password) {
  * @return {Promise<void>}
  */
 export async function updateUserEmailAndSetEmailAsVerified(userId, email) {
-  await sql`UPDATE user SET email = ${email}, email_verified = 1 WHERE id = ${userId}`;
+  await sql`UPDATE app_user SET email = ${email}, email_verified = 1 WHERE id = ${userId}`;
 }
 
 /**
@@ -74,7 +74,7 @@ export async function updateUserEmailAndSetEmailAsVerified(userId, email) {
  * @return {Promise<boolean>}
  */
 export async function setUserAsEmailVerifiedIfEmailMatches(userId, email) {
-  const result = await sql`UPDATE user SET email_verified = 1 WHERE id = ${userId} AND email = ${email} RETURNING *`;
+  const result = await sql`UPDATE app_user SET email_verified = 1 WHERE id = ${userId} AND email = ${email} RETURNING *`;
   return result !== null;
 }
 
@@ -83,11 +83,11 @@ export async function setUserAsEmailVerifiedIfEmailMatches(userId, email) {
  * @return {Promise<string>}
  */
 export async function getUserPasswordHash(userId) {
-  const row = await sql`SELECT password_hash FROM user WHERE id = ${userId}`
+  const row = await sql`SELECT password_hash FROM app_user WHERE id = ${userId}`
   if (row === null) {
     throw new Error("Invalid user ID");
   }
-  return row.password_hash;
+  return row[0].password_hash;
 }
 
 /**
@@ -95,7 +95,7 @@ export async function getUserPasswordHash(userId) {
  * @return {Promise<User | null>}
  */
 export async function getUserFromEmail(email) {
-  const row = await sql`SELECT id, email, username, email_verified, IIF(totp_key IS NOT NULL, 1, 0) FROM user WHERE email = ${email}`;
+  const row = await sql`SELECT id, email, username, email_verified FROM app_user WHERE email = ${email}`;
   if (row === null) {
     return null;
   }

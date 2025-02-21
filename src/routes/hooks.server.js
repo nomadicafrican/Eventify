@@ -1,4 +1,6 @@
 import { validateSessionToken, setSessionTokenCookie, deleteSessionTokenCookie } from "$lib/server/session";
+import "$lib/server/connect";
+
 /** @typedef {import('@sveltejs/kit').Handle }  Handle */
 /** @typedef {import('@sveltejs/kit').ResolveOptions }  ResolveOptions */
 /** @typedef {import('@sveltejs/kit').RequestEvent}  RequestEvent */
@@ -32,3 +34,4 @@ export const handle = async ({ event, resolve }) => {
   event.locals.user = user;
   return resolve(event);
 };
+

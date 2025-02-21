@@ -1,4 +1,4 @@
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { getUserFromEmail, getUserPasswordHash } from "$lib/server/user";
 import { generateSessionToken, createSession, setSessionTokenCookie } from "$lib/server/session";
 import { verifyPasswordHash } from "$lib/server/password";
@@ -34,7 +34,7 @@ async function action(event) {
       email
     });
   }
-  /** @isntance {User | null} */
+  /** @instance {User | null} */
   const user = await getUserFromEmail(email);
   if (user === null) {
     return fail(400, {
@@ -53,4 +53,5 @@ async function action(event) {
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, user.id);
   setSessionTokenCookie(event, sessionToken, session.expiresAt);
+  return redirect(302, "/")
 }

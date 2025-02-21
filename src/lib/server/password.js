@@ -16,7 +16,7 @@ export async function hashPassword(password) {
  * @return {Promise<boolean>}
  */
 export async function verifyPasswordHash(hash, password) {
-  return await Bun.password.verify(hash, password);
+  return await Bun.password.verify(password, hash);
 }
 
 /**

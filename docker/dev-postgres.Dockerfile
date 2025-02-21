@@ -1,4 +1,5 @@
-FROM library/postgres:15
+FROM postgres:15
 
-COPY /init.sql /docker-entrypoint-initdb.d/
+WORKDIR /docker-entrypoint-initdb.d
+COPY init.sql .
 

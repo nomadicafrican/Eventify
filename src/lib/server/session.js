@@ -47,7 +47,8 @@ export async function createSession(token, userId) {
   };
 
   await sql`
-    INSERT INTO UserSession (id, user_id, expires_at) VALUES (${session.id}, ${session.userId}, ${session.expiresAt})
+    INSERT INTO user_session (id, user_id, expires_at)
+    VALUES (${session.id}, ${session.userId}, ${session.expiresAt})
   `;
   return session;
 }

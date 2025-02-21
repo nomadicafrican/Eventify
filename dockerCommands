@@ -78,6 +78,7 @@ def cleanBuild(watching: Annotated[bool, typer.Option("--watch", help="connect t
     """
     Cleans the build environment and rebuilds the docker containers
     """
+    stop()
     clean()
     print("Building...")
     os.system(

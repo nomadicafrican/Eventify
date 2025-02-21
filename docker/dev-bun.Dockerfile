@@ -4,7 +4,6 @@ WORKDIR /app/eventify
 
 COPY bun.lockb ./
 COPY package.json ./
-COPY ../serverScripts/server-init.ts ./
 
 RUN bun i
 RUN bun i vite
