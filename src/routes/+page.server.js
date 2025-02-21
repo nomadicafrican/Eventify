@@ -1,33 +1,14 @@
 import {
-  validateSessionToken,
+  deleteSessionTokenCookie,
   setSessionTokenCookie,
-  deleteSessionTokenCookie
+  validateSessionToken
 } from "$lib/server/session";
 import { fail, redirect } from "@sveltejs/kit";
 
 /**
- * @import { Actions, PageServerLoad } from './$types'
- * @import { Fail, Redirect } from '@svelte/kit'
- */
-
-// Example usage
-export function load({ session }) {
-  if (!session.user) {
-    throw Redirect(307, '/login');
-  }
-
-  if (someConditionFails) {
-    throw Fail(400, { error: 'Some error message' });
-  }
-
-  return {
-    props: { user: session.user }
-  };
-}
-
-/**
- * @type {PageServerLoad}
- * @param {any} event
+ * @typedef {import('./$types').Actions} Actions
+ * @typedef {import('./$types').PageServerLoad} PageServerLoad
+ * @typedef {import('$lib/server/session').Session} Session
  */
 
 /**
@@ -46,9 +27,15 @@ export const actions = {
   }
 };
 
+
+/**
+ * @type {PageServerLoad}
+ * @param {any} event
+ * @returns {Promise<{ props: { userId: number } } | { status: number }>}
+ */
 export const load = async (event) => {
   if (event.locals.user === null) {
-    return redirect("/login");
+    return redirect(401, "/login");
   }
 
   const token = event.cookies.get("session") ?? null;
@@ -66,4 +53,16 @@ export const load = async (event) => {
     });
   }
   setSessionTokenCookie(event, token, session.expiresAt);
+  if (!session.userId) {
+    throw redirect(307, '/login');
+  }
+
+  // if (someConditionFails) {
+  //   throw fail(400, { error: 'Some error message' });
+  // }
+
+  return {
+    props: { userId: session.userId }
+  };
+
 };

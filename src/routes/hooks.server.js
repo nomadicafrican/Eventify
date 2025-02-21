@@ -1,10 +1,10 @@
-import { validateSessionToken, setSessionTokenCookie, deleteSessionTokenCookie } from "./lib/server/session";
-/** @import { Handle } from '@sveltejs/kit' */
+import { validateSessionToken, setSessionTokenCookie, deleteSessionTokenCookie } from "$lib/server/session";
+/** @typedef {import('@sveltejs/kit').Handle }  Handle */
+/** @typedef {import('@sveltejs/kit').RequestEvent}  RequestEvent */
 
 /**
- * @param {{ event: any; resolve: any; }}
- * @returns {Promise<any>}
- */
+* @type {Handle}
+*/
 export const handle = async ({ event, resolve }) => {
   const token = event.cookies.get("session") ?? null;
   if (token === null) {
