@@ -37,6 +37,7 @@ export const handle = async ({ event, resolve }) => {
     return resolve(event);
   }
   const userObject = await getUserFromId(user.id);
+
   event.locals.session = session;
   event.locals.user = userObject;
   return resolve(event);

@@ -147,3 +147,27 @@ export async function getUserFromId(id) {
   }
 }
 
+/**
+ * @param {User} user
+ */
+export async function updateUser(user) {
+  await sql`
+    UPDATE app_user
+    SET
+      email = ${user.email},
+      username = ${user.username},
+      email_verified = ${user.emailVerified},
+      registered_2fa = ${user.registered2FA}
+    WHERE id = ${user.id}
+    RETURNING id
+  `;
+}
+
+
+/**
+ * @param {Number} userid 
+ */
+export async function deleteUser(userid) {
+  console.log("Deleting user", userid);
+  await sql`DELETE FROM app_user WHERE id = ${userid.toString()}`;
+}

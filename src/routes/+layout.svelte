@@ -1,9 +1,13 @@
-<script>
+<script lang="ts">
 	import '../app.css';
 	import Logo from '$lib/logo.svelte';
 	import LoginOutButton from '$lib/login-outButton.svelte';
 
 	let { children, data } = $props();
+
+	function capitalizeFirstLetter(str: String): String {
+		return String(str).charAt(0).toUpperCase() + String(str).slice(1);
+	}
 </script>
 
 <div>
@@ -31,16 +35,25 @@
 				</div>
 				<div class="hidden items-center space-x-4 md:flex">
 					{#if data.session != null && data.session.id !== null}
-						<LoginOutButton href="/logout" text="Log Out" />
+						<LoginOutButton
+							href="/logout"
+							text="Log Out, {capitalizeFirstLetter(data.user?.username || '')}"
+						/>
+						<a
+							href="/settings"
+							class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium whitespace-nowrap text-white shadow-sm hover:bg-indigo-700"
+						>
+							Settings
+						</a>
 					{:else}
 						<LoginOutButton href="/login" text="Log In" />
+						<a
+							href="/register"
+							class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium whitespace-nowrap text-white shadow-sm hover:bg-indigo-700"
+						>
+							Register
+						</a>
 					{/if}
-					<a
-						href="/register"
-						class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium whitespace-nowrap text-white shadow-sm hover:bg-indigo-700"
-					>
-						Register
-					</a>
 				</div>
 			</div>
 		</div>

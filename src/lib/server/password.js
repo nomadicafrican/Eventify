@@ -1,4 +1,3 @@
-
 /** @access private **/
 const hasher = new Bun.CryptoHasher("sha1")
 

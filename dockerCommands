@@ -99,6 +99,17 @@ def watch():
     )
 
 
+@app.command()
+def reset():
+    """
+    Resets docker to fresh state
+    """
+    print("Resetting...")
+    os.system(
+        "docker system prune -a"
+    )
+
+
 if __name__ == "__main__":
     app()
 

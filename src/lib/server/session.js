@@ -51,6 +51,7 @@ export async function createSession(token, userId) {
     INSERT INTO user_session (id, user_id, expires_at)
     VALUES (${session.id}, ${session.userId}, ${session.expiresAt})
   `;
+
   return session;
 }
 
@@ -61,16 +62,18 @@ export async function createSession(token, userId) {
 export async function validateSessionToken(token) {
   hasher.update(new TextEncoder().encode(token))
   const sessionId = hasher.digest("hex");
+
   const userSession = await sql`
     SELECT
       user_session.id,
       user_session.user_id,
       user_session.expires_at,
-      app_user.id
+      app_user.id AS app_user_id
     FROM user_session
     INNER JOIN app_user ON app_user.id = user_session.user_id
     WHERE user_session.id = ${sessionId}
   `;
+
   if (userSession.length === 0) {
     return { session: null, user: null };
   }
@@ -83,7 +86,7 @@ export async function validateSessionToken(token) {
   };
 
   const user = ({
-    id: Number(session.id),
+    id: Number(userSession[0].app_user_id)
   });
 
   if (Date.now() >= session.expiresAt.getTime()) {
@@ -108,18 +111,21 @@ export async function validateSessionToken(token) {
  * @return {Promise<void>}
  */
 export async function invalidateSession(sessionId) {
-  hasher.update(new TextEncoder().encode(sessionId));
-  const sessionIdHashed = hasher.digest("hex");
-  await sql`DELETE FROM user_session WHERE id = ${sessionIdHashed}`
+  // hasher.update(new TextEncoder().encode(sessionId)); // TODO: I commented this out, if it breaks, uncomment it
+  // const sessionIdHashed = hasher.digest("hex");
+  const response = await sql`DELETE FROM user_session WHERE id = ${sessionId}`
+  console.log(response)
 }
 
 
 /** 
- * @param {number} userId 
+ * @param {Number} userId 
+ * @param {Session} currentSession
  * @return {Promise<void>}
  */
-export async function invalidateAllSessions(userId) {
-  await sql`DELETE FROM user_session WHERE id = ${userId}`
+export async function invalidateAllSessions(userId, currentSession) {
+  console.log("Invalidating all sessions for user", userId);
+  await sql`DELETE FROM user_session WHERE user_id = ${userId} AND id <> ${currentSession.id.toString()}`
 }
 
 
@@ -151,3 +157,16 @@ export function deleteSessionTokenCookie(event) {
     path: "/"
   });
 }
+
+
+/**
+ * @param {number} userId
+ * @return {Promise<Array<String>>}
+ */
+export async function getSessionsForUser(userId) {
+  const sessions = await sql`SELECT id FROM user_session WHERE user_id = ${userId}`.values();
+  return sessions;
+}
+
+
+
