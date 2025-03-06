@@ -23,10 +23,11 @@ async function action(event) {
   const formData = await event.request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
+  const ipAddress = event.getClientAddress()
   if (typeof email !== "string" || typeof password !== "string") {
     return fail(400, {
       message: "Invalid or missing fields",
-      email: ""
+      email
     });
   }
   if (email === "" || password === "") {
@@ -61,7 +62,7 @@ async function action(event) {
     });
   }
   const sessionToken = generateSessionToken();
-  const session = await createSession(sessionToken, user.id);
+  const session = await createSession(sessionToken, user.id, ipAddress);
   setSessionTokenCookie(event, sessionToken, session.expiresAt);
   return redirect(302, "/")
 }

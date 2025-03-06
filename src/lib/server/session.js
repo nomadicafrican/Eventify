@@ -14,6 +14,7 @@ import { sql } from "bun";
  * @typedef {Object} Session
  * @property {string} id
  * @property {number} userId
+ * @property {String} ipAddress
  * @property {Date} expiresAt
  *
  */
@@ -34,9 +35,10 @@ export function generateSessionToken() {
 /**
  * @param {string} token
  * @param {number} userId
+ * @param {String} ipAddress
  * @return {Promise<Session>}
  */
-export async function createSession(token, userId) {
+export async function createSession(token, userId, ipAddress) {
   hasher.update(new TextEncoder().encode(token));
   const sessionId = hasher.digest("hex");
 
@@ -44,12 +46,13 @@ export async function createSession(token, userId) {
   const session = {
     id: sessionId,
     userId: userId,
+    ipAddress: ipAddress,
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
   };
 
   await sql`
-    INSERT INTO user_session (id, user_id, expires_at)
-    VALUES (${session.id}, ${session.userId}, ${session.expiresAt})
+    INSERT INTO user_session (id, user_id, expires_at, ip_address)
+    VALUES (${session.id}, ${session.userId}, ${session.expiresAt}, ${session.ipAddress})
   `;
 
   return session;
@@ -68,6 +71,7 @@ export async function validateSessionToken(token) {
       user_session.id,
       user_session.user_id,
       user_session.expires_at,
+      user_session.ip_address,
       app_user.id AS app_user_id
     FROM user_session
     INNER JOIN app_user ON app_user.id = user_session.user_id
@@ -82,7 +86,8 @@ export async function validateSessionToken(token) {
   const session = {
     id: userSession[0].id,
     userId: userSession[0].user_id,
-    expiresAt: userSession[0].expires_at
+    expiresAt: userSession[0].expires_at,
+    ipAddress: userSession[0].ip_address
   };
 
   const user = ({
@@ -164,7 +169,7 @@ export function deleteSessionTokenCookie(event) {
  * @return {Promise<Array<String>>}
  */
 export async function getSessionsForUser(userId) {
-  const sessions = await sql`SELECT id FROM user_session WHERE user_id = ${userId}`.values();
+  const sessions = await sql`SELECT ip_address FROM user_session WHERE user_id = ${userId}`.values();
   return sessions;
 }
 

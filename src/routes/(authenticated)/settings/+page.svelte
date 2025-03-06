@@ -49,7 +49,7 @@
 </script>
 
 <div
-	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-500 to-blue-500"
+	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-500 to-blue-500 p-20"
 >
 	<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
 		<h2 class="mb-4 text-center text-2xl font-semibold">Account Settings</h2>
