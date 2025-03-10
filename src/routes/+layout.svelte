@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import Logo from '$lib/logo.svelte';
-	import LoginOutButton from '$lib/login-outButton.svelte';
+	import Button from '$lib/button.svelte';
 
 	let { children, data } = $props();
 
@@ -21,38 +21,27 @@
 						<Logo />
 					</div>
 					<nav class="hidden space-x-10 md:flex">
-						<a href="/" class="text-base font-medium text-gray-700 hover:text-gray-900">Home</a>
-						<a href="/events" class="text-base font-medium text-gray-700 hover:text-gray-900"
-							>Events</a
-						>
-						<a href="/about" class="text-base font-medium text-gray-700 hover:text-gray-900"
-							>About</a
-						>
-						<a href="/contact" class="text-base font-medium text-gray-700 hover:text-gray-900"
-							>Contact</a
-						>
+						<Button color="transparent" href="/" text="Home" />
+						<Button color="transparent" href="/events" text="Events" />
+						<Button color="transparent" href="/about" text="About" />
+						<Button color="transparent" href="/contact" text="Contact" />
 					</nav>
 				</div>
 				<div class="hidden items-center space-x-4 md:flex">
 					{#if data.session != null && data.session.id !== null}
-						<LoginOutButton
+						<Button
 							href="/logout"
 							text="Log Out, {capitalizeFirstLetter(data.user?.username || '')}"
 						/>
 						<a
 							href="/settings"
-							class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium whitespace-nowrap text-white shadow-sm hover:bg-indigo-700"
+							class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium whitespace-nowrap text-white shadow-sm shadow-indigo-700/30 hover:bg-indigo-700/[95%] hover:inset-shadow-xs hover:shadow-none hover:inset-shadow-indigo-950"
 						>
 							Settings
 						</a>
 					{:else}
-						<LoginOutButton href="/login" text="Log In" />
-						<a
-							href="/register"
-							class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium whitespace-nowrap text-white shadow-sm hover:bg-indigo-700"
-						>
-							Register
-						</a>
+						<Button href="/login" text="Log In" />
+						<Button href="/register" text="register" color="indigo" />
 					{/if}
 				</div>
 			</div>

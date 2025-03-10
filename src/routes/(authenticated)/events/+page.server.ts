@@ -1,9 +1,9 @@
-import { getEventsByVenueId } from "$lib/events/events";
+import { getEventsByDate } from "$lib/events/events";
 import type { Event } from "$lib/events/events";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ params }) => {
-  const searchResult = await getEventsByVenueId(12)
+export const load: PageServerLoad = async () => {
+  const searchResult = await getEventsByDate(new Date("2025-01-01"), new Date("2026-01-01"));
 
   const events: Event[] = [];
   for (let i = 0; i <= searchResult.length - 1; i++) {

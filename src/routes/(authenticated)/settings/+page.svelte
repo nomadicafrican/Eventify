@@ -75,6 +75,7 @@
 				type="text"
 				id="username"
 				name="name"
+				autocomplete="name"
 				bind:value={user.username}
 				class="mt-1 w-full rounded-md border-gray-300 p-2"
 			/>
@@ -84,6 +85,7 @@
 				type="email"
 				name="email"
 				id="email"
+				autocomplete="email"
 				bind:value={user.email}
 				class="mt-1 w-full rounded-md border-gray-300 p-2"
 			/>
@@ -97,9 +99,11 @@
 		<h3 class="mt-6 text-lg font-semibold">Change Password</h3>
 		<form method="POST" action="?/updatePassword" use:enhance>
 			<input type="hidden" name="action" value="updatePassword" />
+			<input type="text" name="username" autocomplete="email" style="display: none;" />
 
 			<input
 				type="password"
+				autocomplete="current-password"
 				name="newPassword"
 				placeholder="New Password"
 				bind:value={newPassword}
@@ -109,6 +113,7 @@
 			<input
 				type="password"
 				name="confirmPassword"
+				autocomplete="off"
 				placeholder="Confirm Password"
 				bind:value={confirmPassword}
 				class="mt-2 w-full rounded-md border-gray-300 p-2"

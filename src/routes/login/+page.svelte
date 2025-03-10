@@ -20,6 +20,7 @@
 					type="text"
 					value={form?.email ?? ''}
 					name="email"
+					autocomplete="email"
 					placeholder="Enter your username"
 					class="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
 					required
@@ -31,6 +32,7 @@
 					id="form-login.password"
 					type="password"
 					name="password"
+					autocomplete="current-password"
 					placeholder="Enter your password"
 					class="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
 					required

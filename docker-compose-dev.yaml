@@ -34,6 +34,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db-sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db-sql/dump_05-03-2025_22_08_28.sql:/docker-entrypoint-initdb.d/init2.sql
     healthcheck:
       test:
         ["CMD", "pg_isready", "-U", "postgres", "-d", "eventify"]

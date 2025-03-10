@@ -85,7 +85,7 @@ SELECT * FROM event WHERE venue_id = ${venueId}
 
 export const getEventsByDate = async (beginDate: Date, endDate: Date): Promise<Event[]> => {
   const queryResult = await sql`
-    SELECT * FROM event WHERE event_date > ${beginDate}::date AND event_date < ${endDate}::date
+    SELECT * FROM event WHERE event_date > ${beginDate.toISOString()}::date AND event_date < ${endDate.toISOString()}::date
   `;
 
   let bookings: Event[] = [];
@@ -140,7 +140,18 @@ export const getEventsByTag = async (tag: String): Promise<Event[]> => {
 
 
 
+export const getEventsByTags = async (tags: String[]): Promise<Event[][]> => {
+  let bookings: Event[][] = [];
 
+  for (let i = 0; i < tags.length - 1; i++) {
+    if (!tags[i]) continue;
+    if (tags[i].length <= 0) continue;
+
+    bookings.push(await getEventsByTag(tags[i]));
+  }
+
+  return bookings;
+}
 
 
 

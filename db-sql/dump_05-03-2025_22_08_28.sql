@@ -11,8 +11,6 @@ SET standard_conforming_strings = on;
 -- Drop databases (except postgres and template1)
 --
 
-DROP DATABASE eventify;
-
 
 
 
@@ -20,14 +18,12 @@ DROP DATABASE eventify;
 -- Drop roles
 --
 
-DROP ROLE postgres;
 
 
 --
 -- Roles
 --
 
-CREATE ROLE postgres;
 ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'SCRAM-SHA-256$4096:rXYfovFEkwN97FrULUVjZA==$g0wxEwL+A53DQDAuZhYJzvpT7QZmnLiqD3sVlYB1d6Q=:dpQDf/fbOAKHTamMzIASK4oIncRVyBYaLw9ImXMSYGU=';
 
 --
@@ -156,9 +152,8 @@ SET row_security = off;
 -- Name: eventify; Type: DATABASE; Schema: -; Owner: postgres
 --
 
+DROP DATABASE IF EXISTS eventify;
 CREATE DATABASE eventify WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
-
-
 ALTER DATABASE eventify OWNER TO postgres;
 
 \connect eventify
