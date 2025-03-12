@@ -1,0 +1,17 @@
+
+module my-node 1.0;
+
+require {
+	type container_t;
+	type user_home_t;
+	class file { create open read unlink watch write };
+	class dir { add_name create remove_name watch write };
+}
+
+#============= container_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow container_t user_home_t:dir { add_name create remove_name watch write };
+
+#!!!! This avc is allowed in the current policy
+allow container_t user_home_t:file { create open read unlink watch write };

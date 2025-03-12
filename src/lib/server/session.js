@@ -124,7 +124,7 @@ export async function invalidateSession(sessionId) {
 
 
 /** 
- * @param {Number} userId 
+ * @param {number} userId 
  * @param {Session} currentSession
  * @return {Promise<void>}
  */

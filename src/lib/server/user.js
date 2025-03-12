@@ -122,7 +122,7 @@ export async function getUserFromEmail(email) {
 }
 
 /**
- * @param {Number} id
+ * @param {number} id
  * @return {Promise<User | null>}
  */
 export async function getUserFromId(id) {
@@ -165,7 +165,7 @@ export async function updateUser(user) {
 
 
 /**
- * @param {Number} userid 
+ * @param {number} userid 
  */
 export async function deleteUser(userid) {
   console.log("Deleting user", userid);

@@ -33,12 +33,7 @@
 							href="/logout"
 							text="Log Out, {capitalizeFirstLetter(data.user?.username || '')}"
 						/>
-						<a
-							href="/settings"
-							class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium whitespace-nowrap text-white shadow-sm shadow-indigo-700/30 hover:bg-indigo-700/[95%] hover:inset-shadow-xs hover:shadow-none hover:inset-shadow-indigo-950"
-						>
-							Settings
-						</a>
+						<Button href="/settings" text="settings" color="indigo" />
 					{:else}
 						<Button href="/login" text="Log In" />
 						<Button href="/register" text="register" color="indigo" />

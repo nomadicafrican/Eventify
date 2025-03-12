@@ -1,15 +1,15 @@
 import { sql } from "bun";
 
 export type Event = {
-  id: Number,
+  id: number,
   name: String,
-  max_attendees: Number,
-  min_attendees: Number,
+  max_attendees: number,
+  min_attendees: number,
   event_date: Date,
-  venue_id: Number,
+  venue_id: number,
 };
 
-export const getEventById = async (id: Number): Promise<Event> => {
+export const getEventById = async (id: number): Promise<Event> => {
   const eventResult = await sql`
     SELECT * FROM event WHERE id = ${id}
   `
@@ -25,7 +25,7 @@ export const getEventById = async (id: Number): Promise<Event> => {
   return event;
 };
 
-export const createEvent = async (event: Event): Promise<Number> => {
+export const createEvent = async (event: Event): Promise<number> => {
   await sql`
     INSERT INTO event (name, max_attendees, min_attendees, event_date, venue_id)
     VALUES (${event.name}, ${event.max_attendees}, ${event.min_attendees}, ${event.event_date}, ${event.venue_id});
@@ -35,7 +35,7 @@ export const createEvent = async (event: Event): Promise<Number> => {
   return eventId[0].id;
 }
 
-export const getEventByUserId = async (userId: Number): Promise<Event[]> => {
+export const getEventByUserId = async (userId: number): Promise<Event[]> => {
   const queryResult = await sql`
     SELECT * FROM event WHERE id IN (
       SELECT event_id FROM bookings WHERE user_id = ${userId}
@@ -60,7 +60,7 @@ export const getEventByUserId = async (userId: Number): Promise<Event[]> => {
   return bookings;
 }
 
-export const getEventsByVenueId = async (venueId: Number): Promise<Event[]> => {
+export const getEventsByVenueId = async (venueId: number): Promise<Event[]> => {
   const queryResult = await sql`
 SELECT * FROM event WHERE venue_id = ${venueId}
 `;
