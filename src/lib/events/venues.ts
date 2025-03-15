@@ -178,3 +178,10 @@ export async function createVenue(venue: Venue): Promise<Venue> {
 
   return newVenue;
 }
+
+export async function getAllVenues() {
+  const venueResult = await sql`
+    SELECT * FROM venue
+  `;
+  return venueResult;
+}

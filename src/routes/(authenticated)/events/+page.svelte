@@ -11,9 +11,10 @@
   "
 >
 	{#each data.events as event}
-		<div
+		<a
 			class="h-full w-full rounded-lg bg-white p-8 shadow-lg hover:bg-gray-100"
 			title={`${Math.round(event.attendees!)}/${Math.round(event.max_attendees)} attendees`}
+			href={`/events/${event.id}`}
 		>
 			<ul class="h-max w-full">
 				<li><h2 style="font-size: 24px; font-weight: 400;">{event.name}</h2></li>
@@ -29,6 +30,6 @@
 					</div>
 				</li>
 			</ul>
-		</div>
+		</a>
 	{/each}
 </div>

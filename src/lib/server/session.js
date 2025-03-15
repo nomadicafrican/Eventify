@@ -116,9 +116,9 @@ export async function validateSessionToken(token) {
  * @return {Promise<void>}
  */
 export async function invalidateSession(sessionId) {
-  // hasher.update(new TextEncoder().encode(sessionId)); // TODO: I commented this out, if it breaks, uncomment it
-  // const sessionIdHashed = hasher.digest("hex");
-  const response = await sql`DELETE FROM user_session WHERE id = ${sessionId}`
+  hasher.update(new TextEncoder().encode(sessionId)); // TODO: I commented this out, if it breaks, uncomment it
+  const sessionIdHashed = hasher.digest("hex");
+  const response = await sql`DELETE FROM user_session WHERE id = ${sessionIdHashed}`
   console.log(response)
 }
 

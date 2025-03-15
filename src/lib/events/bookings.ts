@@ -105,3 +105,11 @@ export async function deleteBooking(id: number): Promise<void> {
     DELETE FROM booking WHERE id = ${id}
   `;
 }
+
+export async function updateBooking(booking: Booking): Promise<void> {
+  await sql`
+    UPDATE booking
+    SET user_id = ${booking.userId}, event_id = ${booking.eventId}, number_of_people = ${booking.numberOfPeople}
+    WHERE id = ${booking.id}
+  `;
+}

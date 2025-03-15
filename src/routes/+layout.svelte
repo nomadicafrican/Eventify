@@ -4,6 +4,11 @@
 	import Button from '$lib/button.svelte';
 
 	let { children, data } = $props();
+	let isLogout: boolean = $state(false);
+
+	$effect(() => {
+		isLogout = data.session != null && data.session.id !== null;
+	});
 
 	function capitalizeFirstLetter(str: String): String {
 		return String(str).charAt(0).toUpperCase() + String(str).slice(1);
@@ -28,7 +33,7 @@
 					</nav>
 				</div>
 				<div class="hidden items-center space-x-4 md:flex">
-					{#if data.session != null && data.session.id !== null}
+					{#if isLogout}
 						<Button
 							href="/logout"
 							text="Log Out, {capitalizeFirstLetter(data.user?.username || '')}"

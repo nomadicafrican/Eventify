@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: eventify
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data:K
+      - ./db-sql/init.sql:/docker-entrypoint-initdb.d/init.sql:K
+      - ./db-sql/dump_05-03-2025_22_08_28.sql:/docker-entrypoint-initdb.d/init2.sql:K
+    healthcheck:
+      test:
+        ["CMD", "pg_isready", "-U", "postgres", "-d", "eventify"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  pgdata: {}

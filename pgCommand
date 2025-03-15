@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+
+import typer
+import os
+from typing_extensions import Annotated
+
+app = typer.Typer()
+
+
+@app.command()
+def start(
+        verbose: Annotated[bool, typer.Argument(hidden=True)] = True,
+        watching: Annotated[bool, typer.Option("--watch", help="connect to the containers to receive logs")] = False):
+    """
+    Starts the docker containers
+    """
+    if verbose:
+        print("Starting...")
+    os.system(
+        "docker-compose -f docker-compose-sql.yaml up -d"
+    )
+    if watching:
+        watch()
+
+
+@app.command()
+def stop(verbose: Annotated[bool, typer.Argument(hidden=True)] = True):
+    """
+    Stops the docker containers
+    """
+    if verbose:
+        print("Stopping...")
+    os.system(
+        "docker-compose -f docker-compose-sql.yaml down"
+    )
+
+
+@app.command()
+def restart(watching: Annotated[bool, typer.Option("--watch", help="connect to the containers to receive logs")] = False):
+    """
+    Stops and starts the docker containers
+    """
+    print("Restarting...")
+    stop(False)
+    if watching:
+        start(False)
+        watch()
+    else:
+        start(False)
+
+
+@app.command()
+def clean():
+    """
+    Cleans the build environment
+    """
+    print("Cleaning the build env")
+    os.system(
+        "docker-compose -f docker-compose-sql.yaml down --volumes"
+    )
+
+
+@app.command()
+def build(watching: Annotated[bool, typer.Option("--watch", help="connect to the containers to receive logs")] = False):
+    """
+    Build the docker containers
+    """
+    print("Building...")
+    os.system(
+        "docker-compose -f docker-compose-sql.yaml up --build -d"
+    )
+    if watching:
+        watch()
+
+
+@app.command()
+def cleanBuild(watching: Annotated[bool, typer.Option("--watch", help="connect to the containers to receive logs")] = False):
+    """
+    Cleans the build environment and rebuilds the docker containers
+    """
+    stop()
+    clean()
+    print("Building...")
+    os.system(
+        "docker-compose -f docker-compose-sql.yaml up --force-recreate --build --remove-orphans --always-recreate-deps --renew-anon-volumes -d"
+    )
+    if watching:
+        watch()
+
+
+@app.command()
+def watch():
+    """
+    Starts watching the logs of the containers
+    """
+    print("Watching...")
+    os.system(
+        "docker-compose -f docker-compose-sql.yaml logs -f postgres"
+    )
+
+
+@app.command()
+def reset():
+    """
+    Resets docker to fresh state
+    """
+    print("Resetting...")
+    os.system(
+        "docker system prune -a"
+    )
+
+
+if __name__ == "__main__":
+    app()
+
+# docker-compose -f docker-compose-sql.yaml down --volumes
+# docker-compose -f docker-compose-sql.yaml up --force-recreate --build --remove-orphans --always-recreate-deps --renew-anon-volumes
