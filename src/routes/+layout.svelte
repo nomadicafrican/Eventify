@@ -1,23 +1,12 @@
 <script lang="ts">
-	import '../app.css';
-	import Logo from '$lib/logo.svelte';
 	import Button from '$lib/button.svelte';
-	import { getContext, setContext } from 'svelte';
+	import Logo from '$lib/logo.svelte';
+	import '../app.css';
 
 	let { children, data } = $props();
-	let isAuthenticated: boolean = $state(false);
-
-	$effect(() => {
-		// isLogout = data.session != null && data.session.id !== null;
-		if (data.session && data.user) {
-			setContext('isAuthenticated', true);
-		} else {
-			setContext('isAuthenticated', false);
-		}
-
-		isAuthenticated = getContext('isAuthenticated');
-		$inspect(isAuthenticated);
-	});
+	let isAuthenticated = $derived(
+		data.session && data.session.ipAddress !== null && data.user && data.user.id !== null
+	);
 
 	function capitalizeFirstLetter(str: String): String {
 		return String(str).charAt(0).toUpperCase() + String(str).slice(1);

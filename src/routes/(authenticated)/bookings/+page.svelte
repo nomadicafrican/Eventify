@@ -1,27 +1,9 @@
 <script lang="ts">
 	import type { Booking } from '$lib/events/bookings';
-	import { deleteBooking, updateBooking } from '$lib/events/bookings';
 
 	let bookings: Booking[] = [];
 	let loading = true;
 	let editingBookingId: number | null = null;
-
-	async function cancelBooking(bookingId: number) {
-		if (!confirm('Are you sure you want to cancel this booking?')) return;
-		await deleteBooking(bookingId);
-	}
-
-	function startEditing(bookingId: number) {
-		editingBookingId = bookingId;
-	}
-
-	function cancelEditing() {
-		editingBookingId = null;
-	}
-
-	async function saveBooking(booking: Booking) {
-		await updateBooking(booking);
-	}
 </script>
 
 <div class="container mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-lg">
