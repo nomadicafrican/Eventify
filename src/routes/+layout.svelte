@@ -2,12 +2,21 @@
 	import '../app.css';
 	import Logo from '$lib/logo.svelte';
 	import Button from '$lib/button.svelte';
+	import { getContext, setContext } from 'svelte';
 
 	let { children, data } = $props();
-	let isLogout: boolean = $state(false);
+	let isAuthenticated: boolean = $state(false);
 
 	$effect(() => {
-		isLogout = data.session != null && data.session.id !== null;
+		// isLogout = data.session != null && data.session.id !== null;
+		if (data.session && data.user) {
+			setContext('isAuthenticated', true);
+		} else {
+			setContext('isAuthenticated', false);
+		}
+
+		isAuthenticated = getContext('isAuthenticated');
+		$inspect(isAuthenticated);
 	});
 
 	function capitalizeFirstLetter(str: String): String {
@@ -16,12 +25,10 @@
 </script>
 
 <div>
-	<!-- Navigation/Header (Consistent with Homepage) -->
 	<header class="bg-white shadow">
 		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 			<div class="flex items-center justify-between py-6">
 				<div class="flex items-center">
-					<!-- Bigger Logo with proper spacing -->
 					<div class="mr-10">
 						<Logo />
 					</div>
@@ -33,7 +40,7 @@
 					</nav>
 				</div>
 				<div class="hidden items-center space-x-4 md:flex">
-					{#if isLogout}
+					{#if isAuthenticated}
 						<Button
 							href="/logout"
 							text="Log Out, {capitalizeFirstLetter(data.user?.username || '')}"

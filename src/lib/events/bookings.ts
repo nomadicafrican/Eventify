@@ -15,6 +15,12 @@ export type Booking = {
   numberOfPeople: number,
 }
 
+export interface CreateBookingInterface {
+  userId: number,
+  eventId: number,
+  numberOfPeople: number,
+};
+
 export type Tag = {
   id: number,
   name: string,
@@ -83,13 +89,13 @@ export const getBookingsById = async (id: number): Promise<Booking[]> => {
   return bookingsList;
 }
 
-export async function createBooking(booking: Booking): Promise<number> {
+export async function createBooking(booking: CreateBookingInterface): Promise<number> {
   await sql`
     INSERT INTO booking (user_id, event_id, number_of_people)
     VALUES (${booking.userId}, ${booking.eventId}, ${booking.numberOfPeople})
   `;
 
-  const bookingId = await sql`SELECT LAST_INSERT_ID() as id;`
+  const bookingId = await sql`SELECT LASTVAL() as id;`
   return bookingId[0].id;
 }
 

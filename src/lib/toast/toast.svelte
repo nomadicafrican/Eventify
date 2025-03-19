@@ -23,7 +23,6 @@
 
 	<div class="text">
 		{@render text()}
-		<!-- ✅ Now content() returns a Snippet -->
 	</div>
 
 	{#if dismissible}

@@ -22,25 +22,19 @@ export async function getScheduleById(id: number): Promise<Schedule> {
   return schedule;
 }
 
-export async function getScheduleByEventId(eventId: number): Promise<Schedule[]> {
+export async function getScheduleByEventId(eventId: number): Promise<Schedule> {
   const scheduleResult = await sql`
     SELECT * FROM schedule WHERE event_id = ${eventId}
   `;
 
-  let schedules: Schedule[] = [];
-
-  for (let i = 0; i < scheduleResult.length; i++) {
-    const schedule: Schedule = {
-      id: scheduleResult[i].id,
-      event_id: scheduleResult[i].event_id,
-      startTime: scheduleResult[i].start_time,
-      endTime: scheduleResult[i].end_time
-    }
-
-    schedules.push(schedule);
+  let schedule: Schedule = {
+    id: scheduleResult[0].id,
+    event_id: scheduleResult[0].event_id,
+    startTime: scheduleResult[0].start_time,
+    endTime: scheduleResult[0].end_time
   }
 
-  return schedules;
+  return schedule;
 }
 
 export async function getScheduleByStartTime(startTime: Date) {

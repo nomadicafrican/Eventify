@@ -51,7 +51,7 @@ export const actions = {
 
     console.log("Havent crashed yet 4")
     const sessionToken = generateSessionToken();
-    const session = await createSession(sessionToken, user.id);
+    const session = await createSession(sessionToken, user.id, event.locals.session?.ipAddress!);
     setSessionTokenCookie(event, sessionToken, session.expiresAt);
     console.log("Havent crashed yet 5")
     return redirect(302, "/")

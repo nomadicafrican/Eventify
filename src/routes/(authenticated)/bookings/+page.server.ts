@@ -1,4 +1,3 @@
-import { onMount } from 'svelte';
 import { toast } from 'svelte-french-toast'; // For notifications
 import { getBookingsByUserId, deleteBooking } from '$lib/events/bookings'; // Your custom API access library
 import type { Booking } from '$lib/events/bookings';
@@ -18,7 +17,7 @@ async function fetchBookings(userId: number) {
   }
 }
 
-async function cancelBooking(id: string) {
+async function cancelBooking(id: number) {
   if (!confirm('Are you sure you want to cancel this booking?')) return;
 
   try {
