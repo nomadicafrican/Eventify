@@ -16,10 +16,10 @@ const config = {
       // precompress: false,
       // strict: true
     }),
-    // paths: {
-    // 	// Base path for the application
-    // 	base: process.argv.includes('dev') ? '' : process.env.BASE_PATH || '/sveltekit-adapter-auto'
-    // },
+    paths: {
+      // Base path for the application
+      base: process.argv.includes('dev') ? '' : process.env.BASE_PATH || '/sveltekit-adapter-auto'
+    },
   },
   server: {
     watch: {

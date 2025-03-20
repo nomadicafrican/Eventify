@@ -1,4 +1,3 @@
-import { toast } from 'svelte-french-toast'; // For notifications
 import { getBookingsByUserId, deleteBooking } from '$lib/events/bookings'; // Your custom API access library
 import type { Booking } from '$lib/events/bookings';
 
@@ -11,7 +10,6 @@ async function fetchBookings(userId: number) {
     bookings = res;
   } catch (error) {
     console.error(error);
-    toast.error('Failed to load bookings.');
   } finally {
     loading = false;
   }
@@ -23,10 +21,8 @@ async function cancelBooking(id: number) {
   try {
     await deleteBooking(id);
     bookings = bookings.filter((booking) => booking.id !== id);
-    toast.success('Booking cancelled.');
   } catch (error) {
     console.error(error);
-    toast.error('Failed to cancel booking.');
   }
 }
 
