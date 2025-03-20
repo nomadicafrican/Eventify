@@ -1,112 +1,81 @@
 <script lang="ts">
-	import type { NavigationTarget } from '@sveltejs/kit';
-	import type { PageProps } from './$types';
-	import { page } from '$app/state';
-	import { enhance } from '$app/forms';
+  import { enhance } from '$app/forms';
+  import type { PageProps } from './$types';
 
-	// Variable definitions
-	const { data, form }: PageProps = $props();
-	const { eventResult, venue, schedule } = $state(data);
-	const formattedDate = schedule.startTime.toISOString().split('T');
-	let numBookings = $state(1);
+  // Data from your load function
+  let { data, form }: PageProps = $props();
 
-	let formattedTimeDate = $derived(() => {
-		const date = new Date(schedule.startTime);
-		const hours = String(date.getHours()).padStart(2, '0');
-		const minutes = String(date.getMinutes()).padStart(2, '0');
-		return `${hours}:${minutes}`;
-	});
+  // Extract fields for convenience
+  const { eventResult, venue, schedule, numBookings } = data;
 
-	let referrer = $derived(
-		((data) => {
-			if (!data.referrer) {
-				const baseLocation = page.url.host;
-				const protocol = page.url.protocol;
+  // If the event has a max_attendees > 0, compute participant ratio or default to 0
+  const participantInfo = eventResult?.max_attendees
+    ? `${numBookings}/${eventResult.max_attendees} participants`
+    : `${numBookings} participants`;
 
-				let newNav: NavigationTarget = {
-					url: new URL(`${protocol}${baseLocation}/events/`),
-					route: { id: null },
-					params: null
-				};
-				return newNav;
-			} else {
-				console.log(data.referrer);
-				return data.referrer;
-			}
-		})(data)
-	);
+  // We'll store "1" as the default numberOfPeople in a hidden input, 
+  // or you can change this logic as needed.
+  const defaultNumPeople = 1;
+
+  // Provide a placeholder for your map or actual map integration
+  const mapPlaceholderText = 'Map goes here';
 </script>
 
-<div
-	class="min-h-screen items-center justify-center bg-gradient-to-br from-purple-500 to-blue-500 p-40"
->
-	<h2 class="mb-4 text-2xl font-bold text-white">Book {eventResult.name}</h2>
+<!-- Outer gradient background -->
+<div class="min-h-screen bg-gradient-to-br from-purple-500 to-blue-500 py-8 px-4 text-gray-800">
+  <!-- Main white container for the page content -->
+  <div class="mx-auto max-w-6xl bg-white rounded-lg shadow-lg p-6">
+    <!-- Two-column layout -->
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Left column -->
+      <div class="flex-1">
+        <!-- Centered event title and subtitle -->
+        <h1 class="text-3xl font-bold text-purple-700 text-center">
+          {eventResult?.name ?? 'Event Name'}
+        </h1>
+        <p class="text-gray-500 mt-1 mb-6 text-center">
+          {eventResult?.subtitle ?? 'Event Subtitle'}
+        </p>
 
-	<div class="space-y-4">
-		<div class="rounded-md border border-gray-200 bg-gray-50 p-4 shadow-sm">
-			<div class="space-y-3">
-				<!-- <h3 class="text-lg font-semibold">{eventResult.name}</h3> -->
+        <!-- Map placeholder (or embed an actual map) -->
+        <div class="flex items-center justify-center w-full h-64 bg-gray-200 rounded">
+          <span class="text-gray-500">{mapPlaceholderText}</span>
+        </div>
+      </div>
 
-				<form use:enhance method="POST">
-					<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-						<input type="hidden" id="event" value={JSON.stringify(eventResult)} name="event" />
-						<input type="hidden" id="venue" value={JSON.stringify(venue)} name="venue" />
-						<div>
-							<label class="block text-sm font-medium text-gray-700" for="numPeople"
-								>Number of Participants</label
-							>
-							<input
-								type="number"
-								id="numPeople"
-								name="numPeople"
-								value={numBookings}
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-							/>
-						</div>
-						<div>
-							<label class="block text-sm font-medium text-gray-700" for="booking-date">Date</label>
-							<input
-								type="date"
-								id="booking-date"
-								name="bookingDate"
-								value={formattedDate[0]}
-								disabled
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-							/>
-						</div>
-						<div>
-							<label class="block text-sm font-medium text-gray-700" for="booking.time">Time</label>
-							<input
-								type="time"
-								id="booking-time"
-								name="bookingTime"
-								value={formattedTimeDate()}
-								disabled
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-							/>
-						</div>
-					</div>
+      <!-- Right column: heading, Book form, participant count -->
+      <div class="flex-1 flex flex-col items-center justify-center">
+        <!-- Heading above the book button -->
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+          Attend This Event
+        </h2>
 
-					{#if form?.message}
-						<p class="text-red-700">{form?.message}</p>
-					{/if}
+        <!-- The booking form -->
+        <form method="POST" use:enhance class="mb-6">
+          <!-- Hidden inputs for minimal user interaction -->
+          <input type="hidden" name="numPeople" value={defaultNumPeople} />
+          <input type="hidden" name="event" value={JSON.stringify(eventResult)} />
+          <input type="hidden" name="venue" value={JSON.stringify(venue)} />
 
-					<div class="flex space-x-2 pt-2">
-						<button
-							type="submit"
-							class="rounded-md bg-blue-500 px-3 py-1.5 text-sm text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
-						>
-							Book
-						</button>
-						<a
-							href={referrer?.url.toString()}
-							class="rounded-md bg-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none"
-						>
-							Cancel
-						</a>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+          <!-- Book button -->
+          <button
+            type="submit"
+            class="px-6 py-3 text-lg rounded bg-green-500 text-white font-semibold hover:bg-green-600 transition"
+          >
+            Book
+          </button>
+
+          <!-- If form submission fails, show the error message -->
+          {#if form?.message}
+            <p class="mt-3 text-red-600">{form.message}</p>
+          {/if}
+        </form>
+
+        <!-- Participant count in a pill-like shape -->
+        <div class="px-4 py-2 rounded-full bg-gray-200 text-gray-800 text-sm font-medium">
+          {participantInfo}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
