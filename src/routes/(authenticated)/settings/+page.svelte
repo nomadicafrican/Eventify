@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	// import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import type { PageProps } from './$types';
 
 	type User = {
@@ -13,16 +12,15 @@
 
 	let { data }: PageProps = $props();
 
-	const userInitState: User = {
-		id: 0,
-		email: '',
-		username: '',
-		profilePicture: ''
-	};
-
 	const sessionsInitState: String[] = [];
 
-	let user = $state(userInitState);
+	let user = $derived({
+		id: data.user.id || 0,
+		email: data.user.email,
+		username: data.user.username,
+		profilePicture: 'https://i.pravatar.cc/100'
+	});
+
 	let sessionsList = $state(sessionsInitState);
 	let newPassword = $state();
 	let confirmPassword = $state();
@@ -31,20 +29,13 @@
 	$inspect(sessionsList).with((type, sessionsList) => {
 		if (type === 'update') {
 			console.log('SessionsList Updated:', sessionsList);
-			// debugger;
 		}
 	});
 
-	onMount(() => {
-		user = {
-			id: data.user?.id || 0,
-			username: data.user?.username || '',
-			email: data.user?.email || '',
-			profilePicture: 'https://i.pravatar.cc/100'
-		};
-		data.sessions.forEach((session) => {
-			sessionsList.push(session[0]);
-		});
+	onMount(async () => {
+		console.log('DSAJK');
+		sessionsList = data.sessions.map((session) => session[0]);
+		await tick();
 	});
 </script>
 

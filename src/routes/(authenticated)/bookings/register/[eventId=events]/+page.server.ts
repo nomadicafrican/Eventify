@@ -63,6 +63,12 @@ export const actions: Actions = {
     const venue: Venue = JSON.parse(
       formData.get("venue") as string
     );
+    const bookings: Booking[] = await getBookingsByEventId(event.id);
+    let currentNumberOfBookings = 0;
+    for (const _ of bookings) {
+      currentNumberOfBookings += 1;
+    }
+
 
     if (numPeople < 0) {
       return fail(400, {
@@ -70,16 +76,16 @@ export const actions: Actions = {
       })
     }
 
-    let attendeesCieling = 0;
+    let attendeesCeiling = 0;
     if (event.max_attendees > venue.capacity) {
-      attendeesCieling = venue.capacity
+      attendeesCeiling = venue.capacity - currentNumberOfBookings;
     } else {
-      attendeesCieling = event.max_attendees
+      attendeesCeiling = event.max_attendees - currentNumberOfBookings;
     }
 
-    if (numPeople >= attendeesCieling) {
+    if (numPeople >= attendeesCeiling) {
       return fail(400, {
-        message: `Maximum booking limit is ${attendeesCieling}`
+        message: `Maximum booking limit is ${attendeesCeiling}`
       })
     }
 
