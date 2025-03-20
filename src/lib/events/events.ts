@@ -35,6 +35,16 @@ export const createEvent = async (event: Event): Promise<number> => {
   return eventId[0].id;
 }
 
+export const replaceEvent = async (event: Event): Promise<number> => {
+  await sql`
+    REPLACE event (id, name, max_attendees, min_attendees, event_date, venue_id)
+    VALUES (${event.id} ${event.name}, ${event.max_attendees}, ${event.min_attendees}, ${event.event_date}, ${event.venue_id})
+  `;
+
+  const eventId = await sql`SELECT LAST_INSERT_ID() as id;`
+  return eventId[0].id;
+}
+
 export const getEventByUserId = async (userId: number): Promise<Event[]> => {
   const queryResult = await sql`
     SELECT * FROM event WHERE id IN (

@@ -1,114 +1,220 @@
+<!-- <script lang="ts"> -->
+<!-- 	import type { Booking } from '$lib/events/bookings'; -->
+<!-- 	import type { Event } from '$lib/events/events'; -->
+<!-- 	import { fetch } from 'bun'; -->
+<!-- 	import SuccessModal from '$lib/successModal.svelte'; -->
+<!--   import type { MouseEventHandler } from 'svelte/elements';} -->
+<!---->
+<!-- 	// Props from load function -->
+<!-- 	const { data } = $props(); -->
+<!---->
+<!-- 	let showModal = $state(false); -->
+<!-- 	let modalTitle = $state(''); -->
+<!-- 	let bookings: Booking[] = $derived(data.bookingsResult); -->
+<!-- 	let bookedEvents: Event[] = $derived(data.bookedEvents); -->
+<!-- 	let bookingNumCounter = $state({ -->
+<!-- 		count: 0, -->
+<!-- 		inc: function () { -->
+<!-- 			this.count += 1; -->
+<!-- 		} -->
+<!-- 	}); -->
+<!---->
+<!-- 	let numberOfAttendeesArray = $derived( -->
+<!-- 		bookings.map((booking) => { -->
+<!-- 			return booking.numberOfPeople; -->
+<!-- 		}) -->
+<!-- 	); -->
+<!---->
+<!-- 	// State variables -->
+<!-- 	let loading = false; // Initial loading is done server-side -->
+<!---->
+<!-- 	async function changeAttendees(bookingNumCounter: number) { -->
+<!-- 		let result: Response = new Response(); -->
+<!-- 		async () => { -->
+<!-- 			result = await fetch( -->
+<!-- 				`/api/changeAttendees/?numAttendees=${numberOfAttendeesArray[bookingNumCounter]}`, -->
+<!-- 				{ -->
+<!-- 					method: 'POST', -->
+<!-- 					body: JSON.stringify(bookings[bookingNumCounter]) -->
+<!-- 				} -->
+<!-- 			); -->
+<!-- 		}; -->
+<!-- 		if (result && result.ok) { -->
+<!-- 			showModal = true; -->
+<!-- 			modalTitle = 'Booking Success!'; -->
+<!-- 		} else { -->
+<!-- 			showModal = false; -->
+<!-- 			modalTitle = 'Booking failure 😿'; -->
+<!-- 		} -->
+<!-- 		const MEH: MouseEventHandler<HTMLButtonElement>; -->
+<!--     return MEH; -->
+<!-- 	} -->
+<!-- </script> -->
+<!---->
+<!-- <SuccessModal isOpen={showModal} title={modalTitle} /> -->
+<!-- <div class="container mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-lg"> -->
+<!-- 	<h2 class="mb-4 text-2xl font-bold">Booked Events</h2> -->
+<!---->
+<!-- 	{#if loading} -->
+<!-- 		<div class="flex justify-center py-8"> -->
+<!-- 			<div class="animate-pulse text-center"> -->
+<!-- 				<p>Loading...</p> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	{:else if bookings.length === 0} -->
+<!-- 		<div class="rounded-md bg-gray-50 p-8 text-center"> -->
+<!-- 			<p class="text-gray-600">No events available.</p> -->
+<!-- 		</div> -->
+<!-- 	{:else} -->
+<!-- 		<div class="space-y-4"> -->
+<!-- 			{#each bookings as booking} -->
+<!-- 				<div class="rounded-md border border-gray-200 bg-gray-50 p-4 shadow-sm"> -->
+<!-- 					<div class="space-y-3"> -->
+<!-- 						<h3 class="text-lg font-semibold">{bookedEvents[bookingNumCounter.count].name}</h3> -->
+<!-- 						<input type="hidden" name="eventId" value={booking.id} /> -->
+<!-- 						<div class="grid grid-cols-1 gap-3 sm:grid-cols-2"> -->
+<!-- 							<div> -->
+<!-- 								<label class="block text-sm font-medium text-gray-700" for="numPeople" -->
+<!-- 									>Number of Participants</label -->
+<!-- 								> -->
+<!-- 								<input -->
+<!-- 									type="number" -->
+<!-- 									id="numPeople" -->
+<!-- 									name="numPeople" -->
+<!-- 									value={numberOfAttendeesArray[bookingNumCounter.count]} -->
+<!-- 									class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" -->
+<!-- 								/> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!---->
+<!-- 						<div class="flex space-x-2 pt-2"> -->
+<!-- 							<button -->
+<!-- 								class="button rounded-md bg-blue-500 p-4 text-white shadow-sm hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none" -->
+<!-- 								onclick={changeAttendees(bookingNumCounter.count)} -->
+<!-- 							> -->
+<!-- 								Change Booking -->
+<!-- 							</button> -->
+<!-- 							<a -->
+<!-- 								href="/bookings/cancel/{booking.id}" -->
+<!-- 								class="button rounded-md bg-red-500 p-4 text-white shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none" -->
+<!-- 								>Cancel Booking</a -->
+<!-- 							> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 				{bookingNumCounter.inc()} -->
+<!-- 			{/each} -->
+<!-- 		</div> -->
+<!-- 	{/if} -->
+<!-- </div> -->
+
 <script lang="ts">
 	import type { Booking } from '$lib/events/bookings';
+	import type { Event } from '$lib/events/events';
+	import { fetch } from 'bun';
+	import SuccessModal from '$lib/successModal.svelte';
 
-	let bookings: Booking[] = [];
-	let loading = true;
-	let editingBookingId: number | null = null;
+	// Props from load function
+	const { data } = $props();
+
+	let showModal = $state(false);
+	let modalTitle = $state('');
+	let bookings: Booking[] = $derived(data.bookingsResult);
+	let bookedEvents: Event[] = $derived(data.bookedEvents);
+	// let bookingNumCounter = $state({
+	// count: 0,
+	// inc: function () {
+	// this.count += 1;
+	// }
+	// });
+
+	let numberOfAttendeesArray = $derived(
+		bookings.map((booking) => {
+			return booking.numberOfPeople;
+		})
+	);
+
+	// State variables
+	async function changeAttendees(bookingIndex: number) {
+		let result: Response | null = null; // Initialize to null
+		try {
+			result = await fetch(
+				`/api/changeAttendees/?numAttendees=${numberOfAttendeesArray[bookingIndex]}`,
+				{
+					method: 'POST',
+					body: JSON.stringify(bookings[bookingIndex])
+				}
+			);
+			if (result.ok) {
+				showModal = true;
+				modalTitle = 'Booking Success!';
+			} else {
+				showModal = false;
+				modalTitle = 'Booking failure 😿 \nPlease contact our Humans to get this figured out';
+			}
+		} catch (error) {
+			console.error('Error changing attendees:', error);
+			showModal = false;
+			modalTitle = 'Booking failure 😿 \nPlease contact our Humans to get this figured out';
+		}
+	}
+
+	function handleClick(bookingIndex: number) {
+		console.log('hello');
+		$inspect('hello');
+		changeAttendees(bookingIndex);
+	}
 </script>
 
+<SuccessModal isOpen={showModal} title={modalTitle} />
 <div class="container mx-auto max-w-3xl rounded-lg bg-white p-6 shadow-lg">
-	<h2 class="mb-4 text-2xl font-bold">My Booked Events</h2>
+	<h2 class="mb-4 text-2xl font-bold">Booked Events</h2>
 
-	{#if loading}
-		<div class="flex justify-center py-8">
-			<div class="animate-pulse text-center">
-				<p>Loading your bookings...</p>
-			</div>
-		</div>
-	{:else if bookings.length === 0}
-		<div class="rounded-md bg-gray-50 p-8 text-center">
-			<p class="text-gray-600">You haven't booked any events yet.</p>
-			<a
-				href="/events"
-				class="mt-4 inline-block rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-			>
-				Browse Events
-			</a>
-		</div>
-	{:else}
-		<div class="space-y-4">
-			{#each bookings as booking}
-				<div class="rounded-md border border-gray-200 bg-gray-50 p-4 shadow-sm">
-					{#if editingBookingId === booking.id}
-						<div class="space-y-3">
-							<h3 class="text-lg font-semibold">{booking.eventName}</h3>
-
-							<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-								<div>
-									<label class="block text-sm font-medium text-gray-700" for="booking-date"
-										>Date</label
-									>
-									<input
-										type="date"
-										id="booking-date"
-										bind:value={booking.date}
-										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-									/>
-								</div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700" for="booking.time"
-										>Time</label
-									>
-									<input
-										type="time"
-										id="booking-time"
-										bind:value={booking.time}
-										class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-									/>
-								</div>
-							</div>
-
-							<div class="flex space-x-2 pt-2">
-								<button
-									on:click={() => saveBooking(booking)}
-									class="rounded-md bg-blue-500 px-3 py-1.5 text-sm text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
-								>
-									Save
-								</button>
-								<button
-									on:click={cancelEditing}
-									class="rounded-md bg-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none"
-								>
-									Cancel
-								</button>
-							</div>
+	<div class="space-y-4">
+		{#each bookings as booking, index (booking.id)}
+			<div class="rounded-md border border-gray-200 bg-gray-50 p-4 shadow-sm">
+				<div class="space-y-3">
+					<h3 class="text-lg font-semibold">
+						{bookedEvents[index].name}
+					</h3>
+					<input type="hidden" name="eventId" value={booking.id} />
+					<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+						<div>
+							<label class="block text-sm font-medium text-gray-700" for="numPeople"
+								>Number of Participants</label
+							>
+							<input
+								type="number"
+								id="numPeople"
+								name="numPeople"
+								value={numberOfAttendeesArray[index]}
+								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+							/>
 						</div>
-					{:else}
-						<div class="flex items-center justify-between">
-							<div>
-								<h3 class="text-lg font-semibold">{booking.eventName}</h3>
-								<p class="text-sm text-gray-600">📅 {booking.date} at {booking.time}</p>
-								<p class="text-sm text-gray-600">📍 {booking.venue}</p>
-								<span
-									class={`mt-2 inline-block rounded-full px-2 py-0.5 text-xs ${
-										booking.status === 'confirmed'
-											? 'bg-green-100 text-green-800'
-											: booking.status === 'pending'
-												? 'bg-yellow-100 text-yellow-800'
-												: 'bg-red-100 text-red-800'
-									}`}
-								>
-									{booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-								</span>
-							</div>
-							<div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
-								<button
-									on:click={() => startEditing(booking.id)}
-									class="rounded-md bg-blue-500 px-3 py-1.5 text-sm text-white hover:bg-blue-600"
-								>
-									Edit
-								</button>
-								<button
-									on:click={() => cancelBooking(booking.id)}
-									class="rounded-md bg-red-500 px-3 py-1.5 text-sm text-white hover:bg-red-600"
-								>
-									Cancel
-								</button>
-							</div>
-						</div>
-					{/if}
+					</div>
+
+					<div class="flex space-x-2 pt-2">
+						<button
+							type="button"
+							class="button rounded-md bg-blue-500 p-4 text-white shadow-sm hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+							onclick={() => {
+								console.log('haiiii');
+							}}
+						>
+							Change Booking
+						</button>
+					</div>
+					<a
+						href="/bookings/cancel/{booking.id}"
+						class="button rounded-md bg-red-500 p-4 text-white shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+						>Cancel Booking</a
+					>
 				</div>
-			{/each}
-		</div>
-	{/if}
+			</div>
+		{:else}
+			<div class="rounded-md bg-gray-50 p-8 text-center">
+				<p class="text-gray-600">No events available.</p>
+			</div>
+		{/each}
+	</div>
 </div>

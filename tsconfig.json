@@ -5,19 +5,21 @@
       "ESNext",
       "DOM"
     ],
+    "target": "ESNext",
     "moduleDetection": "force",
     "allowJs": true,
     "checkJs": true,
     // Bundler mode
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
+    "noEmit": true,
     // Best practices
-    "strict": true,
-    "skipLibCheck": true,
+    "strict": false, // TODO: turn on to lint errrors
+    "skipLibCheck": true, //TODO: if this breaks comment it out
     "noFallthroughCasesInSwitch": true,
     // Some stricter flags
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": true,
   },
 }

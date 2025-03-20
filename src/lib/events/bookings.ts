@@ -68,6 +68,17 @@ export const getBookingsByUserId = async (id: number): Promise<Booking[]> => {
   return bookingsList;
 }
 
+export const updateBookingParticipants = async (booking: Booking): Promise<number> => {
+  await sql`
+    UPDATE event (id, user_id, event_id, number_of_people)
+    VALUES (${booking.id} ${booking.userId} ${booking.eventId} ${booking.numberOfPeople})
+    WHERE id = ${booking.id}
+  `;
+
+  const eventId = await sql`SELECT LAST_INSERT_ID() as id;`
+  return eventId[0].id;
+}
+
 export const getBookingsById = async (id: number): Promise<Booking[]> => {
   const bookingsResult = await sql`
     SELECT * FROM booking WHERE id = ${id}
