@@ -2,7 +2,7 @@ FROM oven/bun:1.2.2
 
 WORKDIR /app/eventify
 
-COPY bun.lockb ./
+COPY bun.lock ./
 COPY package.json ./
 
 RUN bun i

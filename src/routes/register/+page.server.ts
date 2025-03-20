@@ -31,11 +31,11 @@ export const actions = {
       })
     }
 
-    if (!await verifyPasswordStrength(password)) {
-      return fail(400, {
-        message: "Password is too weak",
-      })
-    }
+    // if (!await verifyPasswordStrength(password)) {
+    //   return fail(400, {
+    //     message: "Password is too weak",
+    //   })
+    // }
 
     console.log("Havent crashed yet 3")
     let user: User;

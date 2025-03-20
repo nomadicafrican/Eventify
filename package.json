@@ -47,7 +47,10 @@
   "dependencies": {
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
+    "@rollup/rollup-darwin-arm64": "^4.36.0",
     "@sveltejs/adapter-static": "^3.0.8",
+    "@tailwindcss/oxide-darwin-arm64": "^4.0.14",
+    "lightningcss": "^1.29.3",
     "svelte-french-toast": "^1.2.0"
   }
 }
