@@ -1,17 +1,14 @@
 <script lang="ts">
-	let { isOpen = false, title } = $props();
-
-	function closeModal() {
-		isOpen = false;
-	}
-
-	function handleClickOutside(event) {
-		if (isOpen && !event.target.closest('.modal')) {
-			closeModal();
-		}
-	}
+	let {
+		isOpen = false,
+		title,
+		handleClickOutside = $bindable(),
+		closeModal = $bindable()
+	} = $props();
 </script>
 
+<svelte:window onclick={handleClickOutside} />
+{@debug isOpen, title, handleClickOutside, closeModal}
 {#if isOpen}
 	<div class="modal-overlay">
 		<div class="modal">
@@ -63,5 +60,3 @@
 		</div>
 	</div>
 {/if}
-
-<svelte:window on:click={handleClickOutside} />

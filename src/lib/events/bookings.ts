@@ -69,32 +69,27 @@ export const getBookingsByUserId = async (id: number): Promise<Booking[]> => {
 }
 
 export const updateBookingParticipants = async (booking: Booking): Promise<number> => {
-  await sql`
-    UPDATE event (id, user_id, event_id, number_of_people)
-    VALUES (${booking.id} ${booking.userId} ${booking.eventId} ${booking.numberOfPeople})
+  const id = await sql`
+    UPDATE booking
+    SET
+      number_of_people = ${booking.numberOfPeople}
     WHERE id = ${booking.id}
+    RETURNING id;
   `;
 
-  const eventId = await sql`SELECT LAST_INSERT_ID() as id;`
-  return eventId[0].id;
+  return id[0].id;
 }
 
-export const getBookingsById = async (id: number): Promise<Booking[]> => {
+export const getBookingById = async (id: number): Promise<Booking> => {
   const bookingsResult = await sql`
     SELECT * FROM booking WHERE id = ${id}
   `;
 
-  let bookingsList: Booking[] = [];
-
-  for (let i = 0; i < bookingsResult.length; i++) {
-    const singleBookingResult: Booking = {
-      id: bookingsResult[i].id,
-      userId: bookingsResult[i].user_id,
-      eventId: bookingsResult[i].event_id,
-      numberOfPeople: bookingsResult[i].number_of_people,
-    }
-
-    bookingsList.push(singleBookingResult);
+  let bookingsList: Booking = {
+    id: bookingsResult[0].id,
+    userId: bookingsResult[0].user_id,
+    eventId: bookingsResult[0].event_id,
+    numberOfPeople: bookingsResult[0].number_of_people,
   }
 
   return bookingsList;

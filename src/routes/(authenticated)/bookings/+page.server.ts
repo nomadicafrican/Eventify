@@ -1,38 +1,13 @@
-<<<<<<< Updated upstream
-import { getBookingsByUserId, deleteBooking } from '$lib/events/bookings'; // Your custom API access library
+import { getBookingsByUserId, deleteBooking, getBookingById } from '$lib/events/bookings'; // Your custom API access library
 import type { Booking } from '$lib/events/bookings';
 
-let bookings: Booking[] = [];
-let loading = true;
-
-async function fetchBookings(userId: number) {
-  try {
-    const res = await getBookingsByUserId(userId);
-    bookings = res;
-  } catch (error) {
-    console.error(error);
-  } finally {
-    loading = false;
-  }
-}
-
-async function cancelBooking(id: number) {
-  if (!confirm('Are you sure you want to cancel this booking?')) return;
-
-  try {
-    await deleteBooking(id);
-    bookings = bookings.filter((booking) => booking.id !== id);
-  } catch (error) {
-    console.error(error);
-=======
-import {
-  getBookingsByUserId,
-  type Booking
-} from '$lib/events/bookings';
-import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+// PageServerLoad
+import { error, fail } from '@sveltejs/kit';
+import type { Action, Actions, PageServerLoad, RequestEvent } from './$types';
 import { getEventById } from '$lib/events/events';
 import type { Event } from '$lib/events/events';
+import { page } from '$app/state';
+
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   if (!params) return error(404, 'Event not found');
@@ -55,7 +30,42 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   } catch (e) {
     console.error('Error in load function:', e);
     throw error(500, 'Failed to load event data.');
->>>>>>> Stashed changes
   }
 };
 
+
+export const actions: Actions = {
+  default: async (event) => {
+    const formData = await event.request.formData();
+    const newNumAttendees = Number.parseInt(formData.get("numPeople") as string)
+    const bookingId = Number.parseInt(formData.get("bookingId") as string)
+    const bookingResult: Booking = await getBookingById(bookingId)
+
+    // console.log("Bookings/+page.server.js:")
+    // console.log("Num attendees: ", newNumAttendees)
+    // console.log("Booking Id: ", bookingId)
+    // console.log(`Booking result: {
+    //   id: ${bookingResult.id},
+    //   userId: ${bookingResult.userId},
+    //   eventId: ${bookingResult.eventId},
+    //   numberOfPeople: ${bookingResult.numberOfPeople}
+    // }`);
+
+    const result = await event.fetch("/api/changeAttendees?numAttendees=" + newNumAttendees, {
+      method: "PUT",
+      body: JSON.stringify(bookingResult)
+    })
+
+
+    if (result && result.ok) {
+      return {
+        success: true
+      }
+    }
+    else {
+      return {
+        message: false
+      }
+    }
+  }
+}
