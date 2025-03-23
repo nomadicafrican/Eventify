@@ -20,3 +20,5 @@ vite.config.ts.timestamp-*
 # config
 .sqlfluff
 
+# nvim session
+Session.vim
