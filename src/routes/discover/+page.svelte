@@ -3,8 +3,7 @@
 
   import { browser } from '$app/environment';
   import type { PageData } from './$types';
-  import VenueMap from '$lib/components/venues/VenueMap.svelte';
-  import type { MarkerData } from '$lib/components/venues/VenueMap.svelte';
+  import VenueMap from '$lib/map.svelte';
   import type { Event as EventType } from '$lib/events/events'; // Alias Event type
   import type { Venue as VenueType } from '$lib/events/venues'; // Alias Venue type
 
@@ -13,7 +12,7 @@
 let { data }: PageData = $props();
 let mapCenter = $state(data.initialCenter || [51.505, -0.09]);
 let mapZoom = $state(data.initialZoom || 13);
-let markers = $state<MarkerData[]>([]);
+let markers = $state([]);
 
 let searchQuery = ''; // Clear default search
   let selectedLocation = '';
