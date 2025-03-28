@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@oslojs/encoding": "^1.1.0",
+    "@sveltejs/adapter-vercel": "^5.6.3",
     "@tailwindcss/vite": "^4.0.14",
     "@testing-library/svelte": "^5.2.7",
     "@types/bun": "^1.2.5",
