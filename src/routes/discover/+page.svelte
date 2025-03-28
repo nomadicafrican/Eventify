@@ -71,7 +71,7 @@ type EventWithVenue = EventType & { venue: VenueType };
    {#if data.events.length > 0}
      {#each data.events as event (event.id)}
        <div class="bg-white rounded-lg shadow-md p-4 flex gap-4 hover:shadow-lg transition-shadow cursor-pointer" on:click={() => centerOnEvent(event)} role="button" tabindex="0" on:keydown={(e) => e.key === 'Enter' && centerOnEvent(event)}>
-         {/* Optional Image Placeholder */}
+         <!-- Optional Image Placeholder -->
          <div class="w-24 h-24 bg-gray-200 rounded flex-shrink-0 hidden sm:block"></div>
          <div class="flex-grow">
            <h3 class="text-lg font-semibold text-purple-700">{event.name}</h3>
