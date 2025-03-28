@@ -7,6 +7,9 @@
 	export let center: LatLngExpression = [51.505, -0.09]; // Default: London
 	export let zoom: number = 13;
 	export let mapId: string = 'map-id'; // Unique ID for the map container
+	
+	// --- Additional Prop for Dynamic Markers ---
+	export let events: Array<{ id: number; lat: number; lng: number; name: string }> = [];
 
 	// --- Component State ---
 	let mapContainer: HTMLDivElement; // Reference to the div element for the map
@@ -39,14 +42,21 @@
 					'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			}).addTo(mapInstance);
 
-			// --- Optional: Add other map features ---
-			// Example: Add a marker
-			L.marker(center).addTo(mapInstance).bindPopup('Hello from Leaflet!');
-
-			// You can add more layers, event listeners, etc. here
-			// mapInstance.on('click', (e) => {
-			//   console.log(`Map clicked at: ${e.latlng}`);
-			// });
+			// --- Add markers based on events prop ---
+			if (events && events.length > 0) {
+				events.forEach((event) => {
+					if (event.lat != null && event.lng != null) {
+						L.marker([event.lat, event.lng])
+							.addTo(mapInstance)
+							.bindPopup(
+								`<a href="/(authenticated)/events/${event.id}" aria-label="View details for ${event.name}">${event.name}</a>`
+							);
+					}
+				});
+			} else {
+				// Fallback: add a marker at the center if no events data is provided
+				L.marker(center).addTo(mapInstance).bindPopup('Hello from Leaflet!');
+			}
 		}
 	});
 
@@ -75,7 +85,7 @@
 <!-- The container div for the map -->
 <!-- bind:this connects the div element to the mapContainer variable -->
 <!-- Make sure the container has a defined height! -->
-<div bind:this={mapContainer} id={mapId} class="map-container"></div>
+<div bind:this={mapContainer} id={mapId} class="map-container" role="application" aria-label="Map showing events"></div>
 
 <style>
 	/* --- CRITICAL: Set a height for the map container --- */
