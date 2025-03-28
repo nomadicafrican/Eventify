@@ -5,6 +5,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [sveltekit(), tailwindcss()],
+  ssr: {
+    noExternal: ['leaflet']
+  },
   server: {
     watch: {
       // useFsEvents: true, // macOS only
