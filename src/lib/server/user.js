@@ -1,8 +1,5 @@
 import { sql } from "bun";
-// import { decrypt, decryptToString, encrypt, encryptString } from "./encryption";
 import { hashPassword } from "./password";
-// import { generateRandomRecoveryCode } from "./utils";
-
 
 /**
  * @typedef {Object} User
@@ -162,7 +159,6 @@ export async function updateUser(user) {
     RETURNING id
   `;
 }
-
 
 /**
  * @param {number} userid 

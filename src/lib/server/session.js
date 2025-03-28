@@ -109,19 +109,16 @@ export async function validateSessionToken(token) {
   return { session, user };
 }
 
-
-
 /** 
  * @param {string} sessionId 
  * @return {Promise<void>}
  */
 export async function invalidateSession(sessionId) {
-  hasher.update(new TextEncoder().encode(sessionId)); // TODO: I commented this out, if it breaks, uncomment it
+  hasher.update(new TextEncoder().encode(sessionId)); 
   const sessionIdHashed = hasher.digest("hex");
   const response = await sql`DELETE FROM user_session WHERE id = ${sessionIdHashed}`
   console.log(response)
 }
-
 
 /** 
  * @param {number} userId 
@@ -132,7 +129,6 @@ export async function invalidateAllSessions(userId, currentSession) {
   console.log("Invalidating all sessions for user", userId);
   await sql`DELETE FROM user_session WHERE user_id = ${userId} AND id <> ${currentSession.id.toString()}`
 }
-
 
 /** 
  * @param {RequestEvent} event 
@@ -149,7 +145,6 @@ export function setSessionTokenCookie(event, token, expiresAt) {
   });
 }
 
-
 /** 
  * @param {RequestEvent} event
  * @return {void} 
@@ -163,7 +158,6 @@ export function deleteSessionTokenCookie(event) {
   });
 }
 
-
 /**
  * @param {number} userId
  * @return {Promise<Array<String>>}
@@ -172,6 +166,3 @@ export async function getSessionsForUser(userId) {
   const sessions = await sql`SELECT ip_address FROM user_session WHERE user_id = ${userId}`.values();
   return sessions;
 }
-
-
-

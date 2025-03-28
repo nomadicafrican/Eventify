@@ -1,7 +1,5 @@
 import { sql } from "bun";
 
-
-
 // CREATE TABLE IF NOT EXISTS booking (
 //     id SERIAL PRIMARY KEY,
 //     user_id INTEGER NOT NULL REFERENCES app_user (id),
