@@ -4,7 +4,6 @@
   import { browser } from '$app/environment';
   import type { PageData } from './$types';
   import VenueMap from '$lib/map.svelte';
-  import type { Event as EventType } from '$lib/events/events'; // Alias Event type
   import type { Venue as VenueType } from '$lib/events/venues'; // Alias Venue type
 
 
