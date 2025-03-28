@@ -1,1 +1,10 @@
 @import 'tailwindcss';
+
+/* Additional styles for the map container */
+.map-container {
+    position: relative;
+    display: block;
+    margin: 0 auto; /* Center the map */
+    border-radius: 8px; /* Optional: rounded corners */
+    overflow: hidden; /* Prevent overflow */
+}
